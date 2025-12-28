@@ -55,6 +55,7 @@ export const systemInfo = {
     get asLines() {
         return [
             `OS: ${data.platform}`,
+            `USER-AGENT: ${data.user_agent}`,
             `CPU: ${data.cores} cores`,
             `RAM: ${data.memory}`,
             `GPU: ${data.gpu}`,
