@@ -6,6 +6,25 @@
 
 	let isGlitching = $state(false);
 
+	let container: HTMLElement;
+	let cursorX = $state(0);
+	let cursorY = $state(0);
+	let isInside = $state(false);
+
+	function handleMouseMove(e: MouseEvent) {
+		if (!container) return;
+
+		const rect = container.getBoundingClientRect();
+
+		// Рассчитываем координаты относительно контейнера
+		// clamp ограничивает значения, чтобы курсор не выходил за края
+		const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+		const y = Math.max(0, Math.min(e.clientY - rect.top, rect.height));
+
+		cursorX = x;
+		cursorY = y;
+	}
+
 	// Рандомные глитчи
 	onMount(() => {
 		const triggerGlitch = () => {
@@ -25,7 +44,22 @@
 	});
 </script>
 
-<div class="terminal-container">
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div
+	bind:this={container}
+	class="terminal-container"
+	onmousemove={handleMouseMove}
+	onmouseenter={() => (isInside = true)}
+	onmouseleave={() => (isInside = false)}
+>
+	<!-- CURSOR -->
+	<div
+		class="custom-mouse"
+		style:left="{cursorX}px"
+		style:top="{cursorY}px"
+		style:display={isInside ? 'block' : 'block'}
+	></div>
+
 	<div class="flicker"></div>
 	<div class="vignette"></div>
 	<div class="crt-effect">
@@ -48,6 +82,29 @@
 </div>
 
 <style>
+	.custom-mouse {
+		position: absolute;
+		width: 20px;
+		height: 20px;
+		background-color: transparent;
+		pointer-events: none; /* Пропускает клики сквозь себя */
+		z-index: 9999;
+		box-shadow: 0 0 10px #90fba4;
+
+		/* Устанавливаем иконку как маску */
+		-webkit-mask-image: url('/static/cursor.svg');
+		mask-image: url('/static/cursor.svg');
+		-webkit-mask-size: contain;
+		mask-size: contain;
+		mask-repeat: no-repeat;
+
+		/* Теперь цвет курсора можно менять этой строчкой: */
+		background-color: #90fba4;
+
+		/* Добавляем свечение */
+		box-shadow: 0 0 8px #90fba4;
+	}
+
 	.flicker {
 		position: absolute;
 		width: 100%;
@@ -122,6 +179,11 @@
 		font-family: 'Courier New', monospace;
 		/* Для аутентичности (ЭЛТ мониторы никогда не были четкими) */
 		filter: blur(0.5px);
+		/* Скрываем реальный системный курсор внутри контейнера */
+		cursor: none !important;
+	}
+	.terminal-container :global(*) {
+		cursor: none !important;
 	}
 
 	.terminal-screen {
