@@ -3,14 +3,14 @@
 	let { children } = $props();
 </script>
 
-<div class="function-keys">
+<div class="terminal-footer">
 	{#if children}
 		{@render children()}
 	{/if}
 </div>
 
 <style>
-	.function-keys {
+	.terminal-footer {
 		display: flex;
 		gap: 5px;
 		border-top: 1px solid #90fbab;
