@@ -21,16 +21,5 @@
 </script>
 
 <div class="system-line">
-	{displayedText}<span class="char-cursor"></span>
+	{displayedText}
 </div>
-
-<style>
-	.char-cursor {
-		background-color: #90fba4;
-		color: #001401; /* Цвет текста под курсором инвертируется */
-		box-shadow: 0 0 8px #90fba4;
-		min-width: 1ch; /* Ширина в один символ */
-		display: inline-block;
-		line-height: 1;
-	}
-</style>
