@@ -1,9 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	import TerminalContent from '$lib/components/TerminalContent.svelte';
-	import FuncKey from '$lib/components/FuncKey.svelte';
-	import TerminalFooter from '$lib/components/TerminalFooter.svelte';
 	import TerminalInput from '$lib/components/TerminalInput.svelte';
 	import TypewriterLine from '$lib/components/TypeWriter.svelte';
 
@@ -18,7 +15,7 @@
 	function startNextLine() {
 		if (currentLineIndex < printable.length) {
 			visibleLines = [...visibleLines, printable[currentLineIndex]];
-			
+
 			currentLineIndex++;
 		}
 	}
@@ -35,12 +32,9 @@
 	onMount(async () => {
 		await initSystemInfo();
 
-		printable = [...systemInfo.asLines, "====="];
-		
-		const welcome: string[] = [
-			"Добро пожаловать в систему.",
-			"Введите свое имя:"
-		];
+		printable = [...systemInfo.asLines, '====='];
+
+		const welcome: string[] = ['Добро пожаловать в систему.', 'Введите свое имя:'];
 
 		printable.push(...welcome);
 
@@ -48,7 +42,7 @@
 	});
 </script>
 
-<TerminalContent>
+<div class="page-container">
 	<div class="terminal-output">
 		{#each visibleLines as line, i}
 			<TypewriterLine text={line} onComplete={startNextLine} speed={5} />
@@ -57,20 +51,18 @@
 			<!-- ... -->
 		</div>
 	</div>
-</TerminalContent>
 
-<TerminalInput prefix="guest@system:~$" onEnter={userInput}/>
-
-<TerminalFooter>
-	<FuncKey link="/help">F1 [/help]</FuncKey>
-	<FuncKey link="/auth">F2 [/auth]</FuncKey>
-	<FuncKey link="/register">F3 [/register]</FuncKey>
-	<FuncKey link="/hack">F4 [hack pentagon]</FuncKey>
-	<FuncKey link="/info">F5 [info]</FuncKey>
-	<FuncKey link="/about">F6 [about]</FuncKey>
-</TerminalFooter>
+	<TerminalInput prefix="guest@system:~$" onEnter={userInput} />
+</div>
 
 <style>
+	.page-container {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		height: 100%;
+	}
 	.terminal-output {
 		flex: 1;
 		overflow-y: auto;

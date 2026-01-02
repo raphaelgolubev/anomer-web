@@ -7,6 +7,9 @@
 	import Scanlines from '$lib/components/Scanlines.svelte';
 	import Terminal from '$lib/components/Terminal.svelte';
 	import TerminalHeader from '$lib/components/TerminalHeader.svelte';
+	import TerminalContent from '$lib/components/TerminalContent.svelte';
+	import FuncKey from '$lib/components/FuncKey.svelte';
+	import TerminalFooter from '$lib/components/TerminalFooter.svelte';
 
 	let { children } = $props();
 </script>
@@ -22,10 +25,19 @@
 				<CrtOverlay />
 				<Scanlines />
 				<TerminalHeader />
-				{@render children()}
-			</Terminal>
+				<TerminalContent>
+					{@render children()}
+				</TerminalContent>
 
-			
+				<TerminalFooter>
+					<FuncKey link="/help">F1 [/help]</FuncKey>
+					<FuncKey link="/auth">F2 [/auth]</FuncKey>
+					<FuncKey link="/register">F3 [/register]</FuncKey>
+					<FuncKey link="/hack">F4 [hack pentagon]</FuncKey>
+					<FuncKey link="/info">F5 [info]</FuncKey>
+					<FuncKey link="/about">F6 [about]</FuncKey>
+				</TerminalFooter>
+			</Terminal>
 		</div>
 	</div>
 </div>
