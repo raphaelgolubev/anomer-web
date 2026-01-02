@@ -23,7 +23,7 @@ let data = $state<BrowserData>({
 export async function initSystemInfo() {
     if (typeof window === 'undefined') return;
 
-    const nav = window.navigator;
+    const nav: Navigator = window.navigator;
 
     // gpu
     let gpuName = "";
@@ -38,13 +38,13 @@ export async function initSystemInfo() {
 
     data = {
         user_agent: nav.userAgent,
-        platform: nav.platform || "NO DATA",
+        platform: nav.userAgentData?.platform || "NO DATA",
         language: nav.language,
         resolution: `${window.screen.width}x${window.screen.height}`,
         cores: nav.hardwareConcurrency || 0,
-        memory: (nav as any).deviceMemory
-        ? `${(nav as any).deviceMemory} GB`
-        : `~ ${(nav as any).hardwareConcurrency} GB`,
+        memory: nav.deviceMemory
+        ? `${nav.deviceMemory} GB`
+        : `~ ${nav.hardwareConcurrency} GB`,
         gpu: gpuName,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
     };

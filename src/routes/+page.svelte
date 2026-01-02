@@ -9,8 +9,8 @@
 	let printable = $state<string[]>([]);
 	let visibleLines = $state<string[]>([]);
 	let currentLineIndex = $state(0);
-
-	let userInputContainer: HTMLDivElement;
+	let userEntries = $state<string[]>([]);
+	// let userInputContainer: HTMLDivElement;
 
 	function startNextLine() {
 		if (currentLineIndex < printable.length) {
@@ -21,12 +21,7 @@
 	}
 
 	function userInput(value: string) {
-		console.log(`userInput is ${value}`);
-
-		let text = document.createElement('p');
-		text.textContent = value;
-
-		userInputContainer.appendChild(text);
+		userEntries.push(value);
 	}
 
 	onMount(async () => {
@@ -44,11 +39,13 @@
 
 <div class="page-container">
 	<div class="terminal-output">
-		{#each visibleLines as line, i}
+		{#each visibleLines as line (line)}
 			<TypewriterLine text={line} onComplete={startNextLine} speed={5} />
 		{/each}
-		<div class="user-input" bind:this={userInputContainer}>
-			<!-- ... -->
+		<div class="user-input">
+			{#each userEntries as entry (entry)}
+				<p>{entry}</p>
+			{/each}
 		</div>
 	</div>
 

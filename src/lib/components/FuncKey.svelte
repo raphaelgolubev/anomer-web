@@ -1,8 +1,9 @@
 <script>
+	import { resolve } from "$app/paths";
 	let { children, link } = $props();
 </script>
 
-<a href={link} class="function-key">
+<a href={resolve(link)} class="function-key">
 	{#if children}
 		{@render children()}
 	{/if}

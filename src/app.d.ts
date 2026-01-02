@@ -8,6 +8,17 @@ declare global {
 		// interface PageState {}
 		// interface Platform {}
 	}
+
+	interface Navigator {
+		readonly deviceMemory?: number;
+	}
+
+	interface NavigatorID {
+		readonly userAgentData?: {
+			platform: string;
+			mobile: boolean;
+		};
+	}
 }
 
-export {};
+export { };
