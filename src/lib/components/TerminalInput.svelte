@@ -27,7 +27,7 @@
 	// Символ ПОД курсором
 	let cursorChar = $derived(inputValue[selectionEnd] || ' ');
 
-	let cursorElement: HTMLElement;
+	let cursorElement = $state<HTMLElement>();
 
 	// Синхронизируем позицию курсора при вводе или кликах
 	async function syncCursor(e: Event) {
