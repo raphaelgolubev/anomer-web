@@ -22,33 +22,33 @@
 
 		<div class="screen-content">
 			<Terminal>
-				<CrtOverlay />
-				<Scanlines />
-				<TerminalHeader />
-				<TerminalContent>
-					{@render children()}
-				</TerminalContent>
 
-				<TerminalFooter>
-					<FuncKey link="/help">F1 [/help]</FuncKey>
-					<FuncKey link="/auth">F2 [/auth]</FuncKey>
-					<FuncKey link="/register">F3 [/register]</FuncKey>
-					<FuncKey link="/hack">F4 [hack pentagon]</FuncKey>
-					<FuncKey link="/info">F5 [info]</FuncKey>
-					<FuncKey link="/about">F6 [about]</FuncKey>
-				</TerminalFooter>
+				<!-- Эффекты -->
+					<CrtOverlay />
+					<Scanlines />
+				<!-- /Эффекты -->
+
+				<!-- Контент -->
+					<TerminalHeader />
+
+					<TerminalContent>
+						{@render children()}
+					</TerminalContent>
+
+					<TerminalFooter>
+						<FuncKey link="/">F1 [/root]</FuncKey>
+						<FuncKey link="/auth">F2 [/auth]</FuncKey>
+						<FuncKey link="/register">F3 [/register]</FuncKey>
+						<FuncKey link="/hack">F4 [hack pentagon]</FuncKey>
+						<FuncKey link="/info">F5 [info]</FuncKey>
+						<FuncKey link="/about">F6 [about]</FuncKey>
+					</TerminalFooter>
+				<!-- /Контент -->
+
 			</Terminal>
 		</div>
 	</div>
 </div>
-
-<!-- <Terminal>
-	<Scanlines />
-	<TerminalHeader />
-	{@render children()}
-</Terminal>
-
-<CrtOverlay /> -->
 
 <style>
 	:global(body, html) {

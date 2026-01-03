@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	// Принимаем children как специальный пропс-сниппет
 	let { children } = $props();
 
 	let isGlitching = $state(false);
@@ -60,116 +59,26 @@
 		style:display={isInside ? 'block' : 'block'}
 	></div>
 
-	<div class="flicker"></div>
-	<div class="vignette"></div>
-	<div class="crt-effect">
-		<!-- SVG Фильтр для RGB Shift (размытие каналов) -->
-		<svg class="svg-filters" xmlns="www.w3.org">
-			<filter id="rgb-shift">
-				<feOffset in="SourceGraphic" dx="2" dy="0" result="red" />
-				<feOffset in="SourceGraphic" dx="-2" dy="0" result="blue" />
-				<feBlend in="red" in2="blue" mode="screen" />
-			</filter>
-		</svg>
+	<!-- SVG Фильтр для RGB Shift (размытие каналов) -->
+	<svg class="svg-filters" xmlns="www.w3.org">
+		<filter id="rgb-shift">
+			<feOffset in="SourceGraphic" dx="2" dy="0" result="red" />
+			<feOffset in="SourceGraphic" dx="-2" dy="0" result="blue" />
+			<feBlend in="red" in2="blue" mode="screen" />
+		</filter>
+	</svg>
 
-		<div class="terminal-screen" class:glitch-active={isGlitching}>
-			<!-- Рендерим переданный контент здесь -->
-			{#if children}
-				{@render children()}
-			{/if}
-		</div>
+	<div class="terminal-screen" class:glitch-active={isGlitching}>
+		<!-- Рендерим переданный контент здесь -->
+		{#if children}
+			{@render children()}
+		{/if}
 	</div>
 </div>
 
 <style>
-	.custom-mouse {
-		position: absolute;
-		width: 20px;
-		height: 20px;
-		background-color: transparent;
-		pointer-events: none; /* Пропускает клики сквозь себя */
-		z-index: 9999;
-		box-shadow: 0 0 10px #90fba4;
-
-		/* Устанавливаем иконку как маску */
-		-webkit-mask-image: url('/static/cursor.svg');
-		mask-image: url('/static/cursor.svg');
-		-webkit-mask-size: contain;
-		mask-size: contain;
-		mask-repeat: no-repeat;
-
-		/* Теперь цвет курсора можно менять этой строчкой: */
-		background-color: #90fba4;
-
-		/* Добавляем свечение */
-		box-shadow: 0 0 8px #90fba4;
-	}
-
-	.flicker {
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		background: rgba(18, 16, 16, 0.02);
-		opacity: 0;
-		z-index: 11;
-		animation: flicker 0.15s infinite;
-		pointer-events: none;
-	}
-
-	@keyframes flicker {
-		0% {
-			opacity: 0.1;
-		}
-		50% {
-			opacity: 0.02;
-		}
-		100% {
-			opacity: 0.09;
-		}
-	}
-
-	.glitch-active {
-		animation: shake 0.2s infinite;
-		filter: url(#rgb-shift) brightness(1.2) contrast(1.2) blur(0.9px);
-		pointer-events: none;
-	}
-
-	.svg-filters {
-		height: 0;
-		width: 0;
-		position: absolute;
-		pointer-events: none;
-	}
-
-	@keyframes shake {
-		0% {
-			transform: translate(0, 0);
-		}
-		25% {
-			transform: translate(2px, -1px);
-		}
-		50% {
-			transform: translate(-1px, 2px);
-		}
-		75% {
-			transform: translate(1px, -2px);
-		}
-		100% {
-			transform: translate(0, 0);
-		}
-	}
-
-	/* 3. Виньетка (затемнение по углам) */
-	.vignette {
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		background: radial-gradient(circle, rgba(18, 16, 16, 0) 60%, rgba(0, 0, 0, 0.3) 100%);
-		z-index: 12;
-		pointer-events: none;
-	}
-
 	.terminal-container {
+		padding: 1rem;
 		width: 100%;
 		height: 100%;
 		display: flex;
@@ -184,6 +93,26 @@
 	}
 	.terminal-container :global(*) {
 		cursor: none !important;
+	}
+
+	.custom-mouse {
+		position: absolute;
+		width: 20px;
+		height: 20px;
+		background-color: transparent;
+		/* Пропускает клики сквозь себя */
+		pointer-events: none;
+		z-index: 9999;
+
+		/* Устанавливаем иконку как маску */
+		-webkit-mask-image: url('/static/cursor.svg');
+		mask-image: url('/static/cursor.svg');
+		-webkit-mask-size: contain;
+		mask-size: contain;
+		mask-repeat: no-repeat;
+
+		/* Цвет курсора можно менять этой строчкой: */
+		background-color: #90fba4;
 	}
 
 	.terminal-screen {
@@ -201,20 +130,6 @@
 		scrollbar-color: #90fba4 #001401;
 		/* Можно сделать полосу тоньше */
 		scrollbar-width: thin;
-	}
-
-	.crt-effect {
-		position: relative;
-		width: 96%;
-		max-width: 1200px;
-		height: 97%;
-		background: #001401;
-		/* border: 3px solid #2d8c53; */
-		border-radius: 8px;
-		/* box-shadow:
-			0 0 40px rgba(155, 255, 175, 0.62),
-			inset 0 0 100px rgba(0, 170, 40, 0.1); */
-		overflow: hidden;
 	}
 
 	/* 1. Ширина всей полосы прокрутки */
@@ -239,5 +154,36 @@
 	/* 4. При наведении на ползунок */
 	.terminal-screen::-webkit-scrollbar-thumb:hover {
 		background: #caffdf;
+	}
+
+	.svg-filters {
+		height: 0;
+		width: 0;
+		position: absolute;
+		pointer-events: none;
+	}
+
+	/* Отвечает за анимацию рандомных глюков экрана */
+	.glitch-active {
+		animation: shake 0.2s infinite;
+		filter: url(#rgb-shift) brightness(1.2) contrast(1.2) blur(0.9px);
+		pointer-events: none;
+	}
+	@keyframes shake {
+		0% {
+			transform: translate(0, 0);
+		}
+		25% {
+			transform: translate(2px, -1px);
+		}
+		50% {
+			transform: translate(-1px, 2px);
+		}
+		75% {
+			transform: translate(1px, -2px);
+		}
+		100% {
+			transform: translate(0, 0);
+		}
 	}
 </style>

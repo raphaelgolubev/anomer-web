@@ -9,8 +9,6 @@
 	let printable = $state<string[]>([]);
 	let visibleLines = $state<string[]>([]);
 	let currentLineIndex = $state(0);
-	let userEntries = $state<string[]>([]);
-	// let userInputContainer: HTMLDivElement;
 
 	function startNextLine() {
 		if (currentLineIndex < printable.length) {
@@ -20,21 +18,37 @@
 		}
 	}
 
-	function userInput(value: string) {
-		userEntries.push(value);
-	}
-
 	onMount(async () => {
 		await initSystemInfo();
 
 		printable = [...systemInfo.asLines, '====='];
 
-		const welcome: string[] = ['Добро пожаловать в систему.', 'Введите свое имя:'];
+		const welcome: string[] = [
+			'Инициализация...',
+			'Запуск операционной системы...',
+			'Ошибка: не удалось получить права доступа',
+			'Запрашиваю имя пользователя...',
+			'Введите свое имя:'
+		];
 
 		printable.push(...welcome);
 
 		startNextLine();
 	});
+
+	function userInput(value: string) {
+		currentLineIndex = 0;
+		visibleLines = [];
+
+		printable = [
+			'Поиск в базе данных...',
+			'Пользователь найден.',
+			`Подтвердите, что Вы являетесь пользователем  "${value}"`,
+			'Введите пароль:'
+		];
+
+		startNextLine();
+	}
 </script>
 
 <div class="page-container">
@@ -42,11 +56,6 @@
 		{#each visibleLines as line (line)}
 			<TypewriterLine text={line} onComplete={startNextLine} speed={5} />
 		{/each}
-		<div class="user-input">
-			{#each userEntries as entry (entry)}
-				<p>{entry}</p>
-			{/each}
-		</div>
 	</div>
 
 	<TerminalInput prefix="guest@system:~$" onEnter={userInput} />

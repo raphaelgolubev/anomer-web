@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { SvelteDate } from 'svelte/reactivity';
 
-	// SvelteDate специально создан для работы с реактивностью
 	let now = new SvelteDate(); 
 	
 	let timeString = $derived(

@@ -13,7 +13,7 @@
 		z-index: 9999;
 		pointer-events: none;
 
-		/* 1. Эффект выпуклости через радиальный градиент (Виньетка) */
+		/* Виньетка */
 		background: radial-gradient(
 			circle,
 			rgba(18, 16, 16, 0) 40%,

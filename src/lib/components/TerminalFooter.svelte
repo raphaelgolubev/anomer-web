@@ -1,5 +1,4 @@
 <script>
-	// Принимаем children как специальный пропс-сниппет
 	let { children } = $props();
 </script>
 

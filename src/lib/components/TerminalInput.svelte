@@ -53,7 +53,15 @@
 	function onKeyDown(e: KeyboardEvent) {
 		if (e.key === 'Enter') {
 			onEnter(inputValue);
+			clearInput();
 		}
+	}
+
+	function clearInput() {
+		inputElement.value = "";
+		selectionStart = 0;
+		selectionEnd = 0;
+		inputValue = "";
 	}
 
 	// Позволяем кликнуть в любое место строки, чтобы сфокусировать инпут
@@ -136,7 +144,7 @@
 		user-select: none;
 	}
 
-	/* Тот самый блочный курсор */
+	/* блочный курсор */
 	.block-cursor {
 		background-color: #90fba4;
 		color: #001401; /* Цвет текста под курсором инвертируется */
