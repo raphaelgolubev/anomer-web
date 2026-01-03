@@ -23,8 +23,9 @@
 	}
 
 	.function-key:hover {
-		background: #007708;
-		box-shadow: 0 0 10px rgba(0, 255, 68, 0.5);
+		color: #001401;
+		background: #90fba4;
+		box-shadow: 0 0 8px #90fba4;
 	}
 
 	.function-key:active {
