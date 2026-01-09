@@ -2,81 +2,37 @@
 	import { onMount } from 'svelte';
 
 	import TerminalInput from '$lib/components/TerminalInput.svelte';
-	import TypewriterLine from '$lib/components/TypeWriter.svelte';
+	import LineWriter from '$lib/components/LineWriter.svelte';
 
-	import { initSystemInfo, systemInfo } from '$lib/fingerprint.svelte';
-
+	let isInputActive = $state(false);
 	let printable = $state<string[]>([]);
-	let visibleLines = $state<string[]>([]);
-	let currentLineIndex = $state(0);
 
-	function startNextLine() {
-		if (currentLineIndex < printable.length) {
-			visibleLines = [...visibleLines, printable[currentLineIndex]];
-
-			currentLineIndex++;
-		}
+	function handleWriterComplete() {
+		isInputActive = true;
 	}
 
-	onMount(async () => {
-		await initSystemInfo();
-
-		printable = [...systemInfo.asLines, '====='];
-
-		const welcome: string[] = [
+	onMount(() => {
+		printable = [
 			'Инициализация...',
 			'Запуск операционной системы...',
 			'Ошибка: не удалось получить права доступа',
 			'Запрашиваю имя пользователя...',
 			'Введите свое имя:'
 		];
-
-		printable.push(...welcome);
-
-		startNextLine();
 	});
 
 	function userInput(value: string) {
-		currentLineIndex = 0;
-		visibleLines = [];
-
 		printable = [
 			'Поиск в базе данных...',
 			'Пользователь найден.',
 			`Подтвердите, что Вы являетесь пользователем  "${value}"`,
 			'Введите пароль:'
 		];
-
-		startNextLine();
 	}
 </script>
 
-<div class="page-container">
-	<div class="terminal-output">
-		{#each visibleLines as line (line)}
-			<TypewriterLine text={line} onComplete={startNextLine} speed={5} />
-		{/each}
-	</div>
+{#key printable}
+	<LineWriter lines={printable} speed={10} onComplete={handleWriterComplete} />
+{/key}
 
-	<TerminalInput prefix="guest@system:~$" onEnter={userInput} />
-</div>
-
-<style>
-	.page-container {
-		position: relative;
-		display: flex;
-		flex-direction: column;
-		width: 100%;
-		height: 100%;
-	}
-	.terminal-output {
-		flex: 1;
-		overflow-y: auto;
-		padding: 20px;
-		display: flex;
-		flex-direction: column;
-		white-space: pre-line;
-		font-family: 'Courier New', monospace;
-		line-height: 1.4;
-	}
-</style>
+<TerminalInput prefix="guest@system:~$" onEnter={userInput} />
