@@ -7,7 +7,7 @@
 	let inputValue = $state('');
 	let selectionStart = $state(0);
 	let selectionEnd = $state(0);
-	let isFocused = $state(false);
+	let isMoving = $state(false);
 	let inputElement: HTMLInputElement;
 
 	// Находим границы выделения
@@ -55,6 +55,14 @@
 			onEnter(inputValue);
 			clearInput();
 		}
+
+		// Проверяем нажатие стрелок (ArrowLeft, ArrowRight, Home, End)
+		if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) {
+			isMoving = true;
+		} else {
+			// Если нажата любая другая клавиша - выключаем
+			isMoving = false;
+		}
 	}
 
 	function clearInput() {
@@ -70,6 +78,8 @@
 	}
 
 	onMount(() => {
+		focusInput();
+
 		document.addEventListener('selectionchange', syncCursor);
 		return () => document.removeEventListener('selectionchange', syncCursor);
 	});
@@ -86,7 +96,7 @@
 				<!-- Здесь небольшой костыль в том, что НЕОБХОДИМО писать разметку в одну строку -->
 				<span>{textBefore}</span>{#if textSelected.length > 0}<span class="selection-block"
 						>{textSelected}</span
-					>{:else}<span bind:this={cursorElement} class="block-cursor" class:blink={!isFocused}
+					>{:else}<span bind:this={cursorElement} class="block-cursor" class:blink={!isMoving}
 						>{cursorChar}</span
 					>{/if}<span>{textAfter}</span>
 			</div>
@@ -99,8 +109,6 @@
 				oninput={syncCursor}
 				onkeyup={syncCursor}
 				onclick={syncCursor}
-				onfocus={() => (isFocused = true)}
-				onblur={() => (isFocused = false)}
 				spellcheck="false"
 				autocomplete="off"
 			/>
@@ -111,10 +119,8 @@
 <style>
 	.terminal-wrapper {
 		display: flex;
-		font-family: 'Courier New', monospace;
 		color: #90fba4;
 		cursor: text;
-		font-size: 1.2rem;
 	}
 
 	.display-area {
