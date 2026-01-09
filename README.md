@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-<img src="docs/images/screen.png" alt="drawing" width="500" height="500"/>
+<img src="docs/images/screen.png" alt="drawing" width="800" height="500"/>
 </p>
 
 # Описание
