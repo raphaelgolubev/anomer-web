@@ -23,12 +23,9 @@
 		<div class="screen-content">
 			<Terminal>
 
-				<!-- Эффекты -->
 					<CrtOverlay />
 					<Scanlines />
-				<!-- /Эффекты -->
 
-				<!-- Контент -->
 					<TerminalHeader />
 
 					<TerminalContent>
@@ -43,10 +40,10 @@
 						<FuncKey link="/info">F5 [info]</FuncKey>
 						<FuncKey link="/about">F6 [about]</FuncKey>
 					</TerminalFooter>
-				<!-- /Контент -->
 
 			</Terminal>
 		</div>
+		
 	</div>
 </div>
 
@@ -62,27 +59,30 @@
 	}
 
 	.app-container {
-		display: flex;
+		display: block;
+		/* display: flex; */
 		/* Центр по горизонтали */
-		justify-content: center;
+		/* justify-content: center; */
 		/* Центр по вертикали */
-		align-items: center;
+		/* align-items: center; */
 		width: 100vw;
 		height: 100vh;
 	}
 
 	.monitor-wrapper {
 		position: relative;
-		width: 120vmin;
-		margin: 0 auto;
-		aspect-ratio: 4 / 3;
+		width: 100%;
+		height: 100%;
+		/* margin: 0 auto; */
+		/* aspect-ratio: 4 / 3; */
 	}
 
 	.monitor-frame {
-		position: absolute;
+		position: relative;
 		top: 0;
 		left: 0;
 		width: 100%;
+		height: 100%;
 		/* Рамка должна быть СВЕРХУ контента */
 		z-index: 10;
 		/* Чтобы можно было кликать по кнопкам под рамкой */
