@@ -1,10 +1,8 @@
 <script lang="ts">
 	import './layout.css';
 	import favicon from '$lib/assets/favicon.svg';
-	import monitorImg from '$lib/assets/monitor.png';
+	import monitorImg from '$lib/assets/monitor_inner.png';
 
-	import CrtOverlay from '$lib/components/CRTOverlay.svelte';
-	import Scanlines from '$lib/components/Scanlines.svelte';
 	import Terminal from '$lib/components/Terminal.svelte';
 	import TerminalHeader from '$lib/components/TerminalHeader.svelte';
 	import TerminalContent from '$lib/components/TerminalContent.svelte';
@@ -22,10 +20,6 @@
 
 		<div class="screen-content">
 			<Terminal>
-
-					<CrtOverlay />
-					<Scanlines />
-
 					<TerminalHeader />
 
 					<TerminalContent>
@@ -53,7 +47,7 @@
 		padding: 0;
 		height: 100%;
 		/* Цвет фона за монитором */
-		background-color: #0a0a0a;
+		background-color: #e2e1d3;
 		/* Запрещаем прокрутку всего окна */
 		overflow: hidden;
 	}
@@ -67,6 +61,8 @@
 		/* align-items: center; */
 		width: 100vw;
 		height: 100vh;
+
+		padding: 4rem;
 	}
 
 	.monitor-wrapper {
@@ -91,10 +87,14 @@
 
 	.screen-content {
 		position: absolute;
-		top: 8%;
-		left: 8%;
-		width: 84%;
-		height: 84%;
+		/* top: 8%; */
+		/* left: 8%; */
+		/* width: 84%; */
+		/* height: 84%; */
+		top: 8px;
+		left: 8px;
+		width: 98%;
+		height: 97.5%;
 		background: black;
 		overflow-y: auto;
 		/* Контент под рамкой */

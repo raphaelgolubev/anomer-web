@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import CrtOverlay from '$lib/components/CRTOverlay.svelte';
+	import Scanlines from '$lib/components/Scanlines.svelte';
 
 	let { children } = $props();
 
@@ -68,6 +70,9 @@
 		</filter>
 	</svg>
 
+	<CrtOverlay />
+	<Scanlines />
+
 	<div class="terminal-screen" class:glitch-active={isGlitching}>
 		<!-- Рендерим переданный контент здесь -->
 		{#if children}
@@ -78,7 +83,7 @@
 
 <style>
 	.terminal-container {
-		padding: 1rem;
+		padding: 2rem 4rem 3rem 4rem;
 		width: 100%;
 		height: 100%;
 		display: flex;
@@ -119,7 +124,7 @@
 		position: relative;
 		width: 100%;
 		height: 100%;
-		padding: 2.1rem;
+		/* padding: 2rem 3rem 4rem 4rem; */
 		color: #90fba4;
 		text-shadow: 0 0 8px rgba(150, 248, 166, 0.8);
 		z-index: 2;
