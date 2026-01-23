@@ -20,6 +20,7 @@
 # Описание
 **Anomer** - это просто еще один мессенджер без нагружающих деталей и усложненного функционала.
 
+Backend - https://github.com/raphaelgolubev/anomer-backend
 
 # Установка
 ## MacOS или Linux
