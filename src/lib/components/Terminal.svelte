@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import CrtOverlay from '$lib/components/CRTOverlay.svelte';
 	import Scanlines from '$lib/components/Scanlines.svelte';
+	import { sfx } from '$lib/sound';
 
 	let { children } = $props();
 
@@ -30,6 +31,9 @@
 	onMount(() => {
 		const triggerGlitch = () => {
 			isGlitching = true;
+
+			sfx.playGlitchSfx(); 
+
 			setTimeout(
 				() => {
 					isGlitching = false;
