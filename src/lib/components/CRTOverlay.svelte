@@ -14,11 +14,11 @@
 		pointer-events: none;
 
 		/* Виньетка */
-		background: radial-gradient(
+		/* background: radial-gradient(
 			circle,
-			rgba(18, 16, 16, 0) 40%,
-			rgba(0, 0, 0, 0.25) 70%,
-			rgba(0, 0, 0, 0.6) 100%
-		);
+			var(--vinguette-1) 40%,
+			var(--vinguette-2) 70%,
+			var(--vinguette-3) 100%
+		); */
 	}
 </style>
