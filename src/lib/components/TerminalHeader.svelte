@@ -24,8 +24,8 @@
 </script>
 
 <div class="terminal-header">
-	<div class="header-left">zovOS v0.1a</div>
-	<div class="header-center">Anomer</div>
+	<div class="header-left">A.N.O.M.</div>
+	<div class="header-center">DEVICE ID-2847001</div>
 	<div class="header-right">{timeString}</div>
 </div>
 
@@ -34,7 +34,7 @@
 		display: flex;
 		justify-content: space-between;
 		padding-bottom: 10px;
-		border-bottom: 1px solid #90fbab;
+		border-bottom: 1px solid var(--second-color);
 		margin-bottom: 15px;
 		font-size: 14px;
 	}
