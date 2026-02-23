@@ -27,6 +27,19 @@
 		transitionTo('BOOT');
 	});
 
+	$effect(() => {
+        // эта часть сработает, когда условие для включения гула выполнено
+        if (ui.isCrtActive) {
+            sfx.startHum();
+        }
+
+        // ВАЖНО: возвращаем функцию "очистки"
+        return () => {
+            console.log("Компонент уничтожен, выключаем гул...");
+            sfx.stopHum();
+        };
+    });
+
 	let isStarted = $state(false);
 	function startSystem() {
 		if (isStarted) return; // Чтобы не запускать повторно
@@ -38,8 +51,6 @@
 	const states: Record<ScenarioState, () => Promise<void> | void> = {
 		BOOT: () => {
 			printable = ["ЗАГРУЗКА G.A.T.E. ..."];
-			// Включаем звук трансформатора
-    		sfx.startHum(); 
 		},
 
 		SCANNING: () => {

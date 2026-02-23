@@ -1,9 +1,10 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import './layout.css';
 	import favicon from '$lib/assets/favicon.svg';
 	import monitorImg from '$lib/assets/monitor_inner.png';
-	import { sfx } from '$lib/sound';
 
+	import { sfx } from '$lib/sound';
 	import { ui } from '$lib/ui.svelte';
     import { fade } from 'svelte/transition';
 
@@ -13,6 +14,22 @@
 	import TerminalFooter from '$lib/components/TerminalFooter.svelte';
 
 	let { children } = $props();
+
+	onMount(() => {
+        const handleVisibilityChange = () => {
+            // document.hidden возвращает true, если вкладка неактивна
+            const isHidden = document.hidden;
+            sfx.setPaused(isHidden);
+        };
+
+        // Подписываемся на событие изменения видимости
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        // Убираем слушатель при уничтожении приложения
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    });
 </script>
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
