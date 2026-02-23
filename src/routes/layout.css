@@ -2,6 +2,21 @@
 /* @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography'; */
 
+:root {
+		/* --accent-color: #90fba4; */
+    --accent-color: #f8f8f8;
+    --second-color: #90fba4;
+		--scanline-gradient-color-1: rgba(86, 252, 150, 0.3);
+    --scanline-gradient-color-2: rgba(86, 252, 150, 0.3);
+    --vinguette-1: rgba(18, 16, 16, 0);
+    --vinguette-2: rgba(0, 0, 0, 0.25);
+    --vinguette-3: rgba(0, 0, 0, 0.6);
+    --terminal-center-circle-gradient-1: #003317;
+    --terminal-center-circle-gradient-2: #000000;
+    --monitor-gradient-top-left: #E9EAE3;
+    --monitor-gradient-bottom-right: #C3BB9C;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -11,7 +26,7 @@
 
 /* Цвет выделения текста */
 ::selection {
-  background: #90fba4;
+  background: var(--accent-color);
   color: #001401;
 }
 
