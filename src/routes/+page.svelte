@@ -1,14 +1,4 @@
 <script lang="ts">
-	type LineType = 'default' | 'error' | 'success' | 'warning';
-
-	type TerminalLine = string | { 
-		text: string; 
-		speed?: number; 
-		delay?: number; 
-		type?: LineType; // Новое поле
-	};
-	type ScenarioState = 'BOOT' | 'SCANNING' | 'HARDWARE_CHECK' | 'AWAIT_LOGIN' | 'AWAIT_PASSWORD' | 'MAKE_AUTH';
-
 	import { onMount } from 'svelte';
 
 	import TerminalInput from '$lib/components/TerminalInput.svelte';
@@ -16,15 +6,20 @@
 	import { initSystemInfo, systemInfo } from '$lib/fingerprint.svelte';
 	import { ui } from '$lib/ui.svelte';
 	import { sfx } from '$lib/sound';
+	import { 
+		type TerminalLine, 
+		type ScenarioStateValue, 
+		ScenarioState, 
+		LineType 
+	} from '$lib/types';
 
-	let currentState = $state<ScenarioState>('BOOT');
+	let currentState = $state<ScenarioStateValue>(ScenarioState.BOOT);
 	let isInputActive = $state(false);
 	let printable = $state<TerminalLine[]>([]);
 	let clearTerminal = $state<(() => void) | undefined>(undefined);
 
 	onMount(async () => {
 		await initSystemInfo();
-		transitionTo('BOOT');
 	});
 
 	$effect(() => {
@@ -35,7 +30,6 @@
 
         // ВАЖНО: возвращаем функцию "очистки"
         return () => {
-            console.log("Компонент уничтожен, выключаем гул...");
             sfx.stopHum();
         };
     });
@@ -45,10 +39,10 @@
 		if (isStarted) return; // Чтобы не запускать повторно
 		sfx.init();
 		isStarted = true;
-		transitionTo('BOOT');
+		transitionTo(ScenarioState.BOOT);
 	}
 
-	const states: Record<ScenarioState, () => Promise<void> | void> = {
+	const states: Record<ScenarioStateValue, () => Promise<void> | void> = {
 		BOOT: () => {
 			printable = ["ЗАГРУЗКА G.A.T.E. ..."];
 		},
@@ -78,7 +72,7 @@
 				'SOFTWARE/HARDWARE CHECK:',
 				...systemInfo.asLines,
 				{ text: "Проверка доступа...", speed: 10, delay: 500 },
-				{ text: "ОБНАРУЖЕНА НЕАВТОРИЗОВАННАЯ ПОПЫТКА ДОСТУПА", speed: 10, delay: 2000, type: 'error' },
+				{ text: "ОБНАРУЖЕНА НЕАВТОРИЗОВАННАЯ ПОПЫТКА ДОСТУПА", speed: 10, delay: 2000, type: LineType.ERROR },
 			];
 		},
 
@@ -95,25 +89,30 @@
 		MAKE_AUTH: () => {
             printable = [...printable, '', 'Выполняется авторизация...', ' '];
 			// isInputActive = true;
-        }
+        },
+
+
+		SHUTDOWN: () => {
+			// ...
+		}
 	};
 
 	// Функция смены состояния (как .set_state() в aiogram)
-	async function transitionTo(newState: ScenarioState) {
+	async function transitionTo(newState: ScenarioStateValue) {
 		currentState = newState;
 		await states[newState]();
 	}
 
 	function handleWriterComplete() {
 		switch (currentState) {
-			case 'BOOT': 
-                transitionTo('SCANNING'); 
+			case ScenarioState.BOOT: 
+                transitionTo(ScenarioState.SCANNING); 
                 break;
-			case 'SCANNING': 
-                transitionTo('HARDWARE_CHECK'); 
+			case ScenarioState.SCANNING: 
+                transitionTo(ScenarioState.HARDWARE_CHECK); 
                 break;
-			case 'HARDWARE_CHECK': 
-                transitionTo('AWAIT_LOGIN'); 
+			case ScenarioState.HARDWARE_CHECK: 
+                transitionTo(ScenarioState.AWAIT_LOGIN); 
                 break;
 		}
 	}
@@ -121,21 +120,21 @@
 	function userInput(value: string) {
 		isInputActive = false; // Блокируем инпут на время обработки
 
-		if (currentState === 'AWAIT_PASSWORD') {
+		if (currentState === ScenarioState.AWAIT_PASSWORD) {
 			// маскируем ввод если это пароль
 			let masked = '*'.repeat(value.length)
 			printable = [...printable, `> ${masked}`];
 
-			transitionTo('MAKE_AUTH');
+			transitionTo(ScenarioState.MAKE_AUTH);
 
 		} else {
 			// во всех остальных случаях не маскируем ввод
 			printable = [...printable, `> ${value}`];
 		}
         
-        if (currentState === 'AWAIT_LOGIN') {
+        if (currentState === ScenarioState.AWAIT_LOGIN) {
             // Переходим к следующему логическому этапу
-            transitionTo('AWAIT_PASSWORD');
+            transitionTo(ScenarioState.AWAIT_PASSWORD);
         }
 	}
 </script>

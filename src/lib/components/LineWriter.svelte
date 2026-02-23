@@ -1,19 +1,15 @@
 <script lang="ts">
 	import { sfx } from '$lib/sound';
-
-	type LineType = 'default' | 'error' | 'success' | 'warning';
-	// Определяем тип для гибкой настройки строки
-	type TerminalLine = string | { text: string; speed?: number; delay?: number };
+	import { type LineTypeValue } from '$lib/types';
 
 	let { 
 		lines = [], 
-		// Принимаем пропс, в который запишем функцию
 		bindClear = $bindable(), 
 		onComplete = () => {} 
 	} = $props();
 
 	// Теперь храним объекты, чтобы знать тип строки
-    let displayedLines = $state<{text: string, type: LineType}[]>([]);
+    let displayedLines = $state<{text: string, type: LineTypeValue}[]>([]);
 	let isTyping = $state(false);
 
 	// Экспортируем метод наружу
@@ -29,7 +25,6 @@
 	});
 
 	async function startTyping() {
-		sfx.init(); // Инициализируем аудиоконтекст при первом взаимодействии
         isTyping = true;
         for (let i = displayedLines.length; i < lines.length; i++) {
             const item = lines[i];
