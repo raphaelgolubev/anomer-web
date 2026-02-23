@@ -2,17 +2,21 @@
 	import './layout.css';
 	import favicon from '$lib/assets/favicon.svg';
 	import monitorImg from '$lib/assets/monitor_inner.png';
+	import { sfx } from '$lib/sound';
+
+	import { ui } from '$lib/ui.svelte';
+    import { fade } from 'svelte/transition';
 
 	import Terminal from '$lib/components/Terminal.svelte';
 	import TerminalHeader from '$lib/components/TerminalHeader.svelte';
 	import TerminalContent from '$lib/components/TerminalContent.svelte';
-	import FuncKey from '$lib/components/FuncKey.svelte';
 	import TerminalFooter from '$lib/components/TerminalFooter.svelte';
 
 	let { children } = $props();
 </script>
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
+<svelte:window onclick={() => sfx.init()} onkeydown={() => sfx.init()} />
 
 <div class="app-container">
 	<div class="monitor-wrapper">
@@ -20,20 +24,21 @@
 
 		<div class="screen-content">
 			<Terminal>
-					<TerminalHeader />
+				{#if ui.isCrtActive}
+					<div transition:fade={{ duration: 1000 }}>
+						<TerminalHeader />
+					</div>
+				{/if}
 
 					<TerminalContent>
 						{@render children()}
 					</TerminalContent>
 
-					<TerminalFooter>
-						<FuncKey link="/">F1 [/root]</FuncKey>
-						<FuncKey link="/auth">F2 [/auth]</FuncKey>
-						<FuncKey link="/register">F3 [/register]</FuncKey>
-						<FuncKey link="/hack">F4 [hack pentagon]</FuncKey>
-						<FuncKey link="/info">F5 [info]</FuncKey>
-						<FuncKey link="/about">F6 [about]</FuncKey>
-					</TerminalFooter>
+				{#if ui.isCrtActive}
+					<div transition:fade={{ duration: 1000 }}>
+						<TerminalFooter />
+					</div>
+				{/if}
 
 			</Terminal>
 		</div>
@@ -46,8 +51,11 @@
 		margin: 0;
 		padding: 0;
 		height: 100%;
-		/* Цвет фона за монитором */
-		background-color: #e2e1d3;
+		/* Цвет монитора */
+		background-image: linear-gradient(
+			to bottom right, 
+			var(--monitor-gradient-top-left), 
+			var(--monitor-gradient-bottom-right));
 		/* Запрещаем прокрутку всего окна */
 		overflow: hidden;
 	}
@@ -67,9 +75,11 @@
 
 	.monitor-wrapper {
 		position: relative;
-		width: 100%;
+		width: 90%;
 		height: 100%;
-		/* margin: 0 auto; */
+		margin: 0 auto;
+		overflow: hidden;
+		border-radius: 1.3%;
 		/* aspect-ratio: 4 / 3; */
 	}
 
