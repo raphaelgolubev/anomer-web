@@ -38,6 +38,8 @@
 	const states: Record<ScenarioState, () => Promise<void> | void> = {
 		BOOT: () => {
 			printable = ["ЗАГРУЗКА G.A.T.E. ..."];
+			// Включаем звук трансформатора
+    		sfx.startHum(); 
 		},
 
 		SCANNING: () => {
@@ -54,6 +56,9 @@
 			ui.isCrtActive = true; 
 			clearTerminal?.();
 			printable = [];
+
+			sfx.playCrtOn();
+
             // Ждем долю секунды для эффекта "прогрузки" монитора
             await new Promise(r => setTimeout(r, 2500));
 
@@ -136,7 +141,7 @@
 		class="boot-screen" 
 		onclick={startSystem}
 	>
-		<span class="blink">PRESS ANY KEY OR CLICK TO BOOT G.A.T.E. OS</span>
+		<span class="blink">НАЖМИТЕ ЛЮБУЮ КНОПКУ ДЛЯ ЗАПУСКА G.A.T.E. OS</span>
 	</button>
 {:else}
 	<LineWriter lines={printable} bind:bindClear={clearTerminal} onComplete={handleWriterComplete} />

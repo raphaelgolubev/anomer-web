@@ -40,7 +40,7 @@
             const speed = isObj && item.speed !== undefined ? item.speed : 10;
 
 			// Если это ошибка, можно издать звук перед началом строки
-			if (type === 'error') sfx.playError();
+			if (type === 'error') sfx.playAlert();
 
             displayedLines.push({ text: "", type }); 
             
@@ -48,10 +48,12 @@
                 displayedLines[i].text += text[j];
 
 				// Звук для каждого символа (кроме пробелов)
-				if (text[j] !== " ") sfx.playChar();
+				if (text[j] !== " ") sfx.playTick();
 
                 await new Promise(r => setTimeout(r, speed));
             }
+
+			sfx.playNewline();
             await new Promise(r => setTimeout(r, isObj ? (item.delay ?? 300) : 300));
         }
         isTyping = false;
