@@ -1,62 +1,86 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
+	import { sfx } from '$lib/sound';
 
-    let { 
-        lines = [], 
-        speed = 5, 
-        onComplete = () => {} 
-    } = $props();
+	type LineType = 'default' | 'error' | 'success' | 'warning';
+	// Определяем тип для гибкой настройки строки
+	type TerminalLine = string | { text: string; speed?: number; delay?: number };
 
-    let currentLineIndex = $state(0);
-    let currentCharIndex = $state(0);
-    let displayedLines = $state<string[]>([]);
+	let { 
+		lines = [], 
+		// Принимаем пропс, в который запишем функцию
+		bindClear = $bindable(), 
+		onComplete = () => {} 
+	} = $props();
 
-    // Инициализируем массив пустых строк для каждой входящей строки
-    onMount(() => {
-        displayedLines = lines.map(() => "");
-        typeNextChar();
-    });
+	// Теперь храним объекты, чтобы знать тип строки
+    let displayedLines = $state<{text: string, type: LineType}[]>([]);
+	let isTyping = $state(false);
 
-    function typeNextChar() {
-        // Проверяем, не закончились ли все строки
-        if (currentLineIndex >= lines.length) {
-            onComplete();
-            return;
+	// Экспортируем метод наружу
+	bindClear = () => {
+		displayedLines = [];
+		isTyping = false;
+	};
+
+	$effect(() => {
+		if (lines.length > displayedLines.length && !isTyping) {
+			startTyping();
+		}
+	});
+
+	async function startTyping() {
+		sfx.init(); // Инициализируем аудиоконтекст при первом взаимодействии
+        isTyping = true;
+        for (let i = displayedLines.length; i < lines.length; i++) {
+            const item = lines[i];
+            const isObj = typeof item === 'object';
+            
+            const text = isObj ? item.text : item;
+            const type = (isObj && item.type) ? item.type : 'default';
+            const speed = isObj && item.speed !== undefined ? item.speed : 10;
+
+			// Если это ошибка, можно издать звук перед началом строки
+			if (type === 'error') sfx.playError();
+
+            displayedLines.push({ text: "", type }); 
+            
+            for (let j = 0; j < text.length; j++) {
+                displayedLines[i].text += text[j];
+
+				// Звук для каждого символа (кроме пробелов)
+				if (text[j] !== " ") sfx.playChar();
+
+                await new Promise(r => setTimeout(r, speed));
+            }
+            await new Promise(r => setTimeout(r, isObj ? (item.delay ?? 300) : 300));
         }
-
-        const currentFullText = lines[currentLineIndex];
-
-        // Если в текущей строке еще есть символы
-        if (currentCharIndex < currentFullText.length) {
-            displayedLines[currentLineIndex] += currentFullText[currentCharIndex];
-            currentCharIndex++;
-            setTimeout(typeNextChar, speed);
-        } else {
-            // Переходим к следующей строке
-            currentLineIndex++;
-            currentCharIndex = 0;
-            // Небольшая пауза между строками для естественности
-            setTimeout(typeNextChar, speed * 2);
-        }
+        isTyping = false;
+        onComplete();
     }
 </script>
 
-{#each displayedLines as line, i}
-    {#if line.length > 0 || i === currentLineIndex}
-        <div class="system-line">
-            {line}{#if i === currentLineIndex && currentLineIndex < lines.length}<span class="cursor">_</span>{/if}
+<div class="terminal-output">
+    {#each displayedLines as line, i}
+        <div class="system-line {line.type}">
+            <span>{line.text}</span>
         </div>
-    {/if}
-{/each}
+    {/each}
+</div>
 
 <style>
-    .system-line {
-        min-height: 1.2em;
-    }
-    .cursor {
-        animation: blink 1s step-end infinite;
-    }
-    @keyframes blink {
-        50% { opacity: 0; }
-    }
+	.terminal-output {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+	}
+
+	.system-line {
+		min-height: 1.2em;
+		word-break: break-all;
+		/* Тот самый эффект CRT, о котором говорили раньше */
+		text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+	}
+	.system-line.error { color: #ff3e00; text-shadow: 0 0 8px rgba(255, 62, 0, 0.6); }
+    .system-line.success { color: #00ff41; }
+    .system-line.warning { color: #ffcc00; }
 </style>
