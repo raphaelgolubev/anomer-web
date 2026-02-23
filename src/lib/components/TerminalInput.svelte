@@ -87,7 +87,9 @@
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <div class="terminal-wrapper" onclick={focusInput} role="textbox" tabindex="-1">
-	<span class="prefix">{prefix}</span>
+	{#if prefix.length > 0 }
+		<span class="prefix">{prefix}</span>
+	{/if}
 
 	<div class="display-area">
 		<div class="scroll-container">
@@ -119,7 +121,7 @@
 <style>
 	.terminal-wrapper {
 		display: flex;
-		color: #90fba4;
+		color: var(--accent-color);
 		cursor: text;
 	}
 
@@ -152,9 +154,9 @@
 
 	/* блочный курсор */
 	.block-cursor {
-		background-color: #90fba4;
+		background-color: var(--accent-color);
 		color: #001401; /* Цвет текста под курсором инвертируется */
-		box-shadow: 0 0 8px #90fba4;
+		box-shadow: 0 0 8px var(--accent-color);
 		min-width: 1ch; /* Ширина в один символ */
 		display: inline-block;
 		line-height: 1;
@@ -167,9 +169,9 @@
 	@keyframes blink {
 		0%,
 		100% {
-			background-color: #90fba4;
+			background-color: var(--accent-color);
 			color: #001401;
-			box-shadow: 0 0 8px #90fba4;
+			box-shadow: 0 0 8px var(--accent-color);
 		}
 		50% {
 			background-color: transparent;
@@ -197,14 +199,14 @@
 
 	/* Стиль для выделенного текста */
 	.selection-block {
-		background-color: #90fba4;
+		background-color: var(--accent-color);
 		color: #001401;
-		box-shadow: 0 0 5px #90fba4;
+		box-shadow: 0 0 5px var(--accent-color);
 	}
 
 	/* Блочный курсор (только когда нет выделения) */
 	.block-cursor {
-		background-color: #90fba4;
+		background-color: var(--accent-color);
 		color: #001401;
 		min-width: 1ch;
 		display: inline-block;

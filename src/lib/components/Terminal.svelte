@@ -71,7 +71,7 @@
 	</svg>
 
 	<CrtOverlay />
-	<Scanlines />
+	<!-- <Scanlines /> -->
 
 	<div class="terminal-screen" class:glitch-active={isGlitching}>
 		<!-- Рендерим переданный контент здесь -->
@@ -89,7 +89,11 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: radial-gradient(ellipse at center, #003317 0%, #000000 100%);
+		/* background: radial-gradient(
+			ellipse at center, 
+			var(--terminal-center-circle-gradient-1) 0%, 
+			var(--terminal-center-circle-gradient-2) 100%
+		); */
 		font-family: 'Courier New', monospace;
 		/* Для аутентичности (ЭЛТ мониторы никогда не были четкими) */
 		filter: blur(0.5px);
@@ -117,7 +121,7 @@
 		mask-repeat: no-repeat;
 
 		/* Цвет курсора можно менять этой строчкой: */
-		background-color: #90fba4;
+		background-color: var(--second-color);
 	}
 
 	.terminal-screen {
@@ -125,14 +129,14 @@
 		width: 100%;
 		height: 100%;
 		/* padding: 2rem 3rem 4rem 4rem; */
-		color: #90fba4;
-		text-shadow: 0 0 8px rgba(150, 248, 166, 0.8);
+		color: var(--accent-color);
+		text-shadow: 0 0 4px rgba(0, 255, 42, 0.8);
 		z-index: 2;
 		display: flex;
 		flex-direction: column;
 
 		/* Цвет ползунка | Цвет дорожки */
-		scrollbar-color: #90fba4 #001401;
+		scrollbar-color: var(--accent-color) #001401;
 		/* Можно сделать полосу тоньше */
 		scrollbar-width: thin;
 	}
@@ -150,7 +154,7 @@
 
 	/* 3. Ползунок (thumb) */
 	.terminal-screen::-webkit-scrollbar-thumb {
-		background: #90fba4;
+		background: var(--accent-color);
 		border-radius: 4px;
 		/* Эффект свечения */
 		box-shadow: 0 0 10px rgba(144, 251, 164, 0.5);

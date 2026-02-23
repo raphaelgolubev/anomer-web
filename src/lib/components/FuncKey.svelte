@@ -24,8 +24,8 @@
 
 	.function-key:hover {
 		color: #001401;
-		background: #90fba4;
-		box-shadow: 0 0 8px #90fba4;
+		background: var(--accent-color);
+		box-shadow: 0 0 8px var(--accent-color);
 	}
 
 	.function-key:active {
