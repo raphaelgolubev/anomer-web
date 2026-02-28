@@ -1,9 +1,14 @@
-// Используем расширение .svelte.ts, чтобы работали руны
+// используем расширение .svelte.ts, чтобы работали руны
 class UISettings {
-    isCrtActive = $state(false);
+    isMonitorActive = $state(false);
+    isGateOSActive = $state(false);
+
+    toogleMonitor() {
+        this.isMonitorActive = !this.isMonitorActive;
+    }
     
-    toggleCrt() {
-        this.isCrtActive = !this.isCrtActive;
+    toogleGateOS() {
+        this.isGateOSActive = !this.isGateOSActive;
     }
 }
 
