@@ -7,19 +7,23 @@ class TerminalSound {
         if (this.ctx.state === 'suspended') this.ctx.resume();
     }
 
-    // Управление паузой всего звукового движка
+    // управление паузой всего звукового движка
     setPaused(paused: boolean) {
         if (!this.ctx) return;
 
         if (paused && this.ctx.state === 'running') {
-            this.ctx.suspend(); // Мгновенная пауза всех осцилляторов
+            this.ctx.suspend(); // мгновенная пауза всех осцилляторов
         } else if (!paused && this.ctx.state === 'suspended') {
-            this.ctx.resume();  // Продолжение работы
+            this.ctx.resume();  // продолжение работы
         }
     }
 
     // короткий механический клик
     playTick() {
+        this.beep(600, 0.005, 'triangle', 0.02, 1000);
+    }
+
+    playChar() {
         this.beep(600, 0.005, 'triangle', 0.02, 1000);
     }
 
@@ -53,6 +57,27 @@ class TerminalSound {
         osc.stop(this.ctx.currentTime + 1);
     }
 
+    playCrtOff() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        
+        osc.type = 'sine';
+        // начинаем с высокой частоты и быстро уводим вниз
+        osc.frequency.setValueAtTime(4000, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(40, this.ctx.currentTime + 0.8);
+        
+        gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.8);
+
+        osc.connect(gain).connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.8);
+        
+        // останавливаем гул трансформатора, если он был включен
+        this.stopHum();
+    }
+
     // включение фонового гула
     startHum() {
         if (!this.ctx || this.humNode) return;
@@ -69,7 +94,7 @@ class TerminalSound {
         filter.type = 'lowpass';
         filter.frequency.setValueAtTime(150, this.ctx.currentTime);
 
-        // плавное появление (fade-in), чтобы не было щелчка
+        // плавное появление чтобы не было щелчка
         gain.gain.setValueAtTime(0, this.ctx.currentTime);
         gain.gain.linearRampToValueAtTime(0.02, this.ctx.currentTime + 2); // очень тихо!
 
@@ -79,7 +104,7 @@ class TerminalSound {
         this.humNode = { osc, gain };
     }
 
-    // выключение гула (если нужно, например, при выключении терминала)
+    // выключение гула
     stopHum() {
         if (!this.humNode || !this.ctx) return;
         
@@ -94,12 +119,12 @@ class TerminalSound {
     playGlitchSfx() {
         if (!this.ctx) return;
 
-        // 1. Создаем буфер с белым шумом (0.1 секунды)
+        // создаем буфер с белым шумом (0.1 секунды)
         const bufferSize = this.ctx.sampleRate * 0.1;
         const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
         const data = buffer.getChannelData(0);
         
-        // Заполняем случайными числами (шум)
+        // заполняем случайными числами (шум)
         for (let i = 0; i < bufferSize; i++) {
             data[i] = Math.random() * 2 - 1;
         }
@@ -110,18 +135,48 @@ class TerminalSound {
 
         source.buffer = buffer;
 
-        // 2. Настраиваем фильтр (сделаем звук "песочным")
+        // настраиваем фильтр (сделаем звук "песочным")
         filter.type = 'bandpass'; 
         filter.frequency.setValueAtTime(1500, this.ctx.currentTime);
         filter.Q.setValueAtTime(10, this.ctx.currentTime);
 
-        // 3. Резкая огибающая громкости (щелчки)
+        // резкая огибающая громкости (щелчки)
         gain.gain.setValueAtTime(0.04, this.ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.08);
 
         source.connect(filter).connect(gain).connect(this.ctx.destination);
         
         source.start();
+    }
+
+    playLogonSfx() {
+        if (!this.ctx) return;
+
+        // частоты для аккорда (например, G4, C5, E5)
+        const notes = [392.00, 523.25, 659.25]; 
+        const startTime = this.ctx.currentTime;
+
+        notes.forEach((freq, i) => {
+            const osc = this.ctx!.createOscillator();
+            const gain = this.ctx!.createGain();
+            const filter = this.ctx!.createBiquadFilter();
+
+            osc.type = 'sine'; // самая мягкая волна
+            osc.frequency.setValueAtTime(freq, startTime + i * 0.15); // задержка между нотами
+
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(2000, startTime);
+
+            // мягкое появление и долгое затухание
+            gain.gain.setValueAtTime(0, startTime + i * 0.15);
+            gain.gain.linearRampToValueAtTime(0.04, startTime + i * 0.15 + 0.1); 
+            gain.gain.exponentialRampToValueAtTime(0.0001, startTime + i * 0.15 + 1.5);
+
+            osc.connect(filter).connect(gain).connect(this.ctx!.destination);
+
+            osc.start(startTime + i * 0.15);
+            osc.stop(startTime + i * 0.15 + 1.5);
+        });
     }
 
     // универсальный метод с фильтром
