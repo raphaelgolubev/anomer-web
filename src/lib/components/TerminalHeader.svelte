@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { SvelteDate } from 'svelte/reactivity';
 
+	let { deviceId } = $props();
+
 	let now = new SvelteDate(); 
 	
 	let timeString = $derived(
@@ -16,7 +18,7 @@
 
 	$effect(() => {
 		const interval = setInterval(() => {
-			// Метод setTime спровоцирует обновление реактивности
+			// метод setTime спровоцирует обновление реактивности
 			now.setTime(Date.now());
 		}, 1000);
 		return () => clearInterval(interval);
@@ -25,7 +27,7 @@
 
 <div class="terminal-header">
 	<div class="header-left">A.N.O.M.</div>
-	<div class="header-center">DEVICE ID-2847001</div>
+	<div class="header-center">DEVICE ID-{deviceId}</div>
 	<div class="header-right">{timeString}</div>
 </div>
 

@@ -2,8 +2,8 @@
     import { page } from '$app/state';
     import LineWriter from '$lib/components/LineWriter.svelte';
 
-    // Создаем производное состояние (derived state)
-    // Оно будет автоматически обновляться при изменении page.status
+    // создаем производное состояние (derived state)
+    // оно будет автоматически обновляться при изменении page.status
     const printable = $derived.by(() => {
         const status = page.status;
         const message = page.error?.message || 'Неизвестная ошибка';
@@ -31,7 +31,7 @@
             ];
         }
 
-        // Дефолтный вариант для остальных ошибок
+        // дефолтный вариант для остальных ошибок
         return [
             ...base,
             `Произошла непредвиденная ошибка: ${message}`
@@ -39,11 +39,10 @@
     });
 </script>
 
-<!-- Используем ключ {#key}, чтобы перезапускать анимацию печати при смене ошибки -->
+<!-- используем ключ {#key}, чтобы перезапускать анимацию печати при смене ошибки -->
 {#key page.status}
     <LineWriter
         lines={printable}
-        speed={10}
         onComplete={() => console.log('Печать завершена')}
     />
 {/key}

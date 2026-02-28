@@ -19,7 +19,7 @@
 		);
 		background-size: 100% 3px;
 		background-repeat: repeat;
-		/* Это критично для устранения "грязи" при масштабе */
+		/* это критично для устранения грязи при масштабе */
 		image-rendering: pixelated;
 	}
 </style>

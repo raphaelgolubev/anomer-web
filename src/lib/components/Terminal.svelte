@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import CrtOverlay from '$lib/components/CRTOverlay.svelte';
-	import Scanlines from '$lib/components/Scanlines.svelte';
+	
 	import { sfx } from '$lib/sound';
+	import { ui } from '$lib/ui.svelte';
 
 	let { children } = $props();
 
@@ -18,7 +18,7 @@
 
 		const rect = container.getBoundingClientRect();
 
-		// Рассчитываем координаты относительно контейнера
+		// рассчитываем координаты относительно контейнера
 		// clamp ограничивает значения, чтобы курсор не выходил за края
 		const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
 		const y = Math.max(0, Math.min(e.clientY - rect.top, rect.height));
@@ -27,21 +27,23 @@
 		cursorY = y;
 	}
 
-	// Рандомные глитчи
+	// рандомные глитчи
 	onMount(() => {
 		const triggerGlitch = () => {
 			isGlitching = true;
 
-			sfx.playGlitchSfx(); 
+			if (ui.isMonitorActive) {
+				sfx.playGlitchSfx(); 
+			}
 
 			setTimeout(
 				() => {
 					isGlitching = false;
-					// Следующий глитч через случайное время (от 2 до 10 сек)
+					// следующий глитч через случайное время (от 2 до 10 сек)
 					setTimeout(triggerGlitch, Math.random() * 8000 + 2000);
 				},
 				Math.random() * 300 + 50
-			); // Длительность глитча (50-350мс)
+			); // длительность глитча (50-350мс)
 		};
 
 		const initialTimeout = setTimeout(triggerGlitch, 3000);
@@ -74,7 +76,6 @@
 		</filter>
 	</svg>
 
-	<CrtOverlay />
 	<!-- <Scanlines /> -->
 
 	<div class="terminal-screen" class:glitch-active={isGlitching}>
@@ -93,15 +94,10 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		/* background: radial-gradient(
-			ellipse at center, 
-			var(--terminal-center-circle-gradient-1) 0%, 
-			var(--terminal-center-circle-gradient-2) 100%
-		); */
 		font-family: 'Courier New', monospace;
-		/* Для аутентичности (ЭЛТ мониторы никогда не были четкими) */
+		/* для аутентичности (ЭЛТ мониторы никогда не были четкими) */
 		filter: blur(0.5px);
-		/* Скрываем реальный системный курсор внутри контейнера */
+		/* скрываем реальный системный курсор внутри контейнера */
 		cursor: none !important;
 	}
 	.terminal-container :global(*) {
@@ -113,18 +109,18 @@
 		width: 20px;
 		height: 20px;
 		background-color: transparent;
-		/* Пропускает клики сквозь себя */
+		/* пропускает клики сквозь себя */
 		pointer-events: none;
 		z-index: 9999;
 
-		/* Устанавливаем иконку как маску */
+		/* устанавливаем иконку как маску */
 		-webkit-mask-image: url('/static/cursor.svg');
 		mask-image: url('/static/cursor.svg');
 		-webkit-mask-size: contain;
 		mask-size: contain;
 		mask-repeat: no-repeat;
 
-		/* Цвет курсора можно менять этой строчкой: */
+		/* цвет курсора можно менять этой строчкой: */
 		background-color: var(--second-color);
 	}
 
@@ -132,41 +128,11 @@
 		position: relative;
 		width: 100%;
 		height: 100%;
-		/* padding: 2rem 3rem 4rem 4rem; */
 		color: var(--accent-color);
 		text-shadow: 0 0 4px rgba(0, 255, 42, 0.8);
 		z-index: 2;
 		display: flex;
 		flex-direction: column;
-
-		/* Цвет ползунка | Цвет дорожки */
-		scrollbar-color: var(--accent-color) #001401;
-		/* Можно сделать полосу тоньше */
-		scrollbar-width: thin;
-	}
-
-	/* 1. Ширина всей полосы прокрутки */
-	.terminal-screen::-webkit-scrollbar {
-		width: 8px;
-	}
-
-	/* 2. Фон дорожки (track) */
-	.terminal-screen::-webkit-scrollbar-track {
-		background: #001401;
-		border-left: 1px solid #caffdf33; /* Тонкая линия границы */
-	}
-
-	/* 3. Ползунок (thumb) */
-	.terminal-screen::-webkit-scrollbar-thumb {
-		background: var(--accent-color);
-		border-radius: 4px;
-		/* Эффект свечения */
-		box-shadow: 0 0 10px rgba(144, 251, 164, 0.5);
-	}
-
-	/* 4. При наведении на ползунок */
-	.terminal-screen::-webkit-scrollbar-thumb:hover {
-		background: #caffdf;
 	}
 
 	.svg-filters {
@@ -176,7 +142,7 @@
 		pointer-events: none;
 	}
 
-	/* Отвечает за анимацию рандомных глюков экрана */
+	/* отвечает за анимацию рандомных глюков экрана */
 	.glitch-active {
 		animation: shake 0.2s infinite;
 		filter: url(#rgb-shift) brightness(1.2) contrast(1.2) blur(0.9px);

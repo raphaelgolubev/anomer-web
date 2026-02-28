@@ -10,26 +10,26 @@
 	let isMoving = $state(false);
 	let inputElement: HTMLInputElement;
 
-	// Находим границы выделения
+	// находим границы выделения
 	let start = $derived(Math.min(selectionStart, selectionEnd));
 	let end = $derived(Math.max(selectionStart, selectionEnd));
 
-	// Вычисляем части текста на основе выделения
+	// вычисляем части текста на основе выделения
 	let textBefore = $derived(inputValue.slice(0, Math.min(selectionStart, selectionEnd)));
 	let textSelected = $derived(
 		inputValue.slice(Math.min(selectionStart, selectionEnd), Math.max(selectionStart, selectionEnd))
 	);
-	// Если выделения нет, textAfter должен начинаться с позиции курсора + 1,
+	// если выделения нет, textAfter должен начинаться с позиции курсора + 1,
 	// так как один символ (cursorChar) мы уже отрисовали.
 	let textAfter = $derived(
 		textSelected.length > 0 ? inputValue.slice(end) : inputValue.slice(start + 1)
 	);
-	// Символ ПОД курсором
+	// символ ПОД курсором
 	let cursorChar = $derived(inputValue[selectionEnd] || ' ');
 
 	let cursorElement = $state<HTMLElement>();
 
-	// Синхронизируем позицию курсора при вводе или кликах
+	// синхронизируем позицию курсора при вводе или кликах
 	async function syncCursor(e: Event) {
 		// получаем скрытый инпут
 		const el = e.target as HTMLInputElement;
@@ -38,7 +38,7 @@
 		selectionStart = el.selectionStart || 0;
 		selectionEnd = el.selectionEnd || 0;
 
-		// Ждем, пока Svelte обновит DOM (перерисует позицию курсора в visual-layer)
+		// ждем пока Svelte обновит DOM (перерисует позицию курсора в visual-layer)
 		await tick();
 
 		if (cursorElement) {
@@ -56,23 +56,23 @@
 			clearInput();
 		}
 
-		// Проверяем нажатие стрелок (ArrowLeft, ArrowRight, Home, End)
+		// проверяем нажатие стрелок (ArrowLeft, ArrowRight, Home, End)
 		if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) {
 			isMoving = true;
 		} else {
-			// Если нажата любая другая клавиша - выключаем
+			// если нажата любая другая клавиша - выключаем
 			isMoving = false;
 		}
 	}
 
 	function clearInput() {
-		inputElement.value = "";
+		inputElement.value = '';
 		selectionStart = 0;
 		selectionEnd = 0;
-		inputValue = "";
+		inputValue = '';
 	}
 
-	// Позволяем кликнуть в любое место строки, чтобы сфокусировать инпут
+	// позволяем кликнуть в любое место строки, чтобы сфокусировать инпут
 	function focusInput() {
 		inputElement.focus();
 	}
@@ -87,7 +87,7 @@
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <div class="terminal-wrapper" onclick={focusInput} role="textbox" tabindex="-1">
-	{#if prefix.length > 0 }
+	{#if prefix.length > 0}
 		<span class="prefix">{prefix}</span>
 	{/if}
 
@@ -135,7 +135,7 @@
 
 	.scroll-container {
 		display: flex;
-		overflow-x: hidden; /* Управляется программно через scrollIntoView */
+		overflow-x: hidden; /* управляется программно через scrollIntoView */
 		width: 100%;
 	}
 
@@ -144,7 +144,7 @@
 		word-break: normal;
 		word-spacing: normal;
 		word-wrap: normal;
-		pointer-events: none; /* Пропускаем клики сквозь визуальный слой на инпут */
+		pointer-events: none; /* пропускаем клики сквозь визуальный слой на инпут */
 	}
 
 	.prefix {
@@ -155,9 +155,9 @@
 	/* блочный курсор */
 	.block-cursor {
 		background-color: var(--accent-color);
-		color: #001401; /* Цвет текста под курсором инвертируется */
+		color: #001401; /* цвет текста под курсором инвертируется */
 		box-shadow: 0 0 8px var(--accent-color);
-		min-width: 1ch; /* Ширина в один символ */
+		min-width: 1ch; /* ширина в один символ */
 		display: inline-block;
 		line-height: 1;
 	}
@@ -186,25 +186,25 @@
 		left: 0;
 		width: 100%;
 		height: 100%;
-		opacity: 0; /* Делаем полностью прозрачным */
+		opacity: 0; /* делаем полностью прозрачным */
 		background: transparent;
 		color: transparent;
-		caret-color: transparent; /* Скрываем стандартную палочку-курсор */
+		caret-color: transparent; /* скрываем стандартный курсор */
 		border: none;
 		outline: none;
-		z-index: 2; /* Инпут выше текста */
+		z-index: 2; /* инпут выше текста */
 		font-family: inherit;
 		font-size: inherit;
 	}
 
-	/* Стиль для выделенного текста */
+	/* стиль для выделенного текста */
 	.selection-block {
 		background-color: var(--accent-color);
 		color: #001401;
 		box-shadow: 0 0 5px var(--accent-color);
 	}
 
-	/* Блочный курсор (только когда нет выделения) */
+	/* блочный курсор (только когда нет выделения) */
 	.block-cursor {
 		background-color: var(--accent-color);
 		color: #001401;

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { ui } from '$lib/ui.svelte';
 	import { sfx } from '$lib/sound';
 	import { type LineTypeValue } from '$lib/types';
 
@@ -8,11 +9,10 @@
 		onComplete = () => {} 
 	} = $props();
 
-	// Теперь храним объекты, чтобы знать тип строки
     let displayedLines = $state<{text: string, type: LineTypeValue}[]>([]);
 	let isTyping = $state(false);
 
-	// Экспортируем метод наружу
+	// экспортируем метод наружу
 	bindClear = () => {
 		displayedLines = [];
 		isTyping = false;
@@ -34,21 +34,25 @@
             const type = (isObj && item.type) ? item.type : 'default';
             const speed = isObj && item.speed !== undefined ? item.speed : 10;
 
-			// Если это ошибка, можно издать звук перед началом строки
-			if (type === 'error') sfx.playAlert();
+			// если это ошибка, можно издать звук перед началом строки
+			if (type === 'error' && ui.isMonitorActive) sfx.playAlert();
 
             displayedLines.push({ text: "", type }); 
             
             for (let j = 0; j < text.length; j++) {
                 displayedLines[i].text += text[j];
 
-				// Звук для каждого символа (кроме пробелов)
-				if (text[j] !== " ") sfx.playTick();
+				// звук для каждого символа (кроме пробелов)
+				if (text[j] !== " " && ui.isMonitorActive) {
+					sfx.playChar();
+				}
 
                 await new Promise(r => setTimeout(r, speed));
             }
 
-			sfx.playNewline();
+			if (ui.isMonitorActive) {
+				sfx.playNewline();
+			}
             await new Promise(r => setTimeout(r, isObj ? (item.delay ?? 300) : 300));
         }
         isTyping = false;
@@ -74,7 +78,6 @@
 	.system-line {
 		min-height: 1.2em;
 		word-break: break-all;
-		/* Тот самый эффект CRT, о котором говорили раньше */
 		text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
 	}
 	.system-line.error { color: #ff3e00; text-shadow: 0 0 8px rgba(255, 62, 0, 0.6); }

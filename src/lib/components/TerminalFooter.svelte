@@ -1,5 +1,6 @@
 <div class="terminal-footer">
 	<div class="footer-left">G.A.T.E.</div>
+	<div class="footer-center">~~ *.* ~~</div>
 	<div class="footer-right">General Access Terminal Environment</div>
 </div>
 
