@@ -54,13 +54,13 @@ export const systemInfo = {
     get current() { return data },
     get asLines() {
         return [
-            `OS: ${data.platform}`,
-            `USER-AGENT: ${data.user_agent}`,
+            // `OS: ${data.platform}`,
+            // `USER-AGENT: ${data.user_agent}`,
             `CPU: ${data.cores} cores`,
             `RAM: ${data.memory}`,
             `GPU: ${data.gpu}`,
             `RESOLUTION: ${data.resolution}`,
-            `TZ: ${data.timezone}`,
+            // `TZ: ${data.timezone}`,
         ]
     }
 };
