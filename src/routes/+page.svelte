@@ -1,170 +1,39 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-
 	import TerminalInput from '$lib/components/TerminalInput.svelte';
 	import LineWriter from '$lib/components/LineWriter.svelte';
-	import { initSystemInfo, systemInfo } from '$lib/fingerprint.svelte';
-	import { ui } from '$lib/ui.svelte';
-	import { sfx } from '$lib/sound';
-	import { 
-		type TerminalLine, 
-		type ScenarioStateValue, 
-		ScenarioState, 
-		LineType 
-	} from '$lib/types';
-
-	let currentState = $state<ScenarioStateValue>(ScenarioState.BOOT);
-	let isInputActive = $state(false);
-	let printable = $state<TerminalLine[]>([]);
-	let clearTerminal = $state<(() => void) | undefined>(undefined);
+	import { initSystemInfo } from '$lib/fingerprint.svelte';
+	import { terminal } from '$lib/terminal.svelte';
 
 	onMount(async () => {
 		await initSystemInfo();
 	});
-
-	$effect(() => {
-        // эта часть сработает, когда условие для включения гула выполнено
-        if (ui.isCrtActive) {
-            sfx.startHum();
-        }
-
-        // ВАЖНО: возвращаем функцию "очистки"
-        return () => {
-            sfx.stopHum();
-        };
-    });
-
-	let isStarted = $state(false);
-	function startSystem() {
-		if (isStarted) return; // Чтобы не запускать повторно
-		sfx.init();
-		isStarted = true;
-		transitionTo(ScenarioState.BOOT);
-	}
-
-	const states: Record<ScenarioStateValue, () => Promise<void> | void> = {
-		BOOT: () => {
-			printable = ["ЗАГРУЗКА G.A.T.E. ..."];
-		},
-
-		SCANNING: () => {
-			printable = [
-				...printable,
-				{ text: "[░░░░░░░░░░░░░░░░░░░░░░░]", speed: 25, delay: 500 },
-				"Загрузка модулей...",
-				{ text: "[░░░░░░░░░░░░░░░░░░░░░░░]", speed: 50, delay: 1000 },
-				"Готово.",
-			];
-		},
-
-		HARDWARE_CHECK: async () => {
-			ui.isCrtActive = true; 
-			clearTerminal?.();
-			printable = [];
-
-			sfx.playCrtOn();
-
-            // Ждем долю секунды для эффекта "прогрузки" монитора
-            await new Promise(r => setTimeout(r, 2500));
-
-			printable = [
-				'--- SYSTEM CHECK START ---',
-				'SOFTWARE/HARDWARE CHECK:',
-				...systemInfo.asLines,
-				{ text: "Проверка доступа...", speed: 10, delay: 500 },
-				{ text: "ОБНАРУЖЕНА НЕАВТОРИЗОВАННАЯ ПОПЫТКА ДОСТУПА", speed: 10, delay: 2000, type: LineType.ERROR },
-			];
-		},
-
-		AWAIT_LOGIN: () => {
-			printable = [...printable, '', 'Пожалуйста, введите Ваш логин:', ' '];
-			isInputActive = true;
-		},
-
-        AWAIT_PASSWORD: () => {
-            printable = [...printable, '', 'Пожалуйста, введите Ваш пароль:', ' '];
-			isInputActive = true;
-        },
-
-		MAKE_AUTH: () => {
-            printable = [...printable, '', 'Выполняется авторизация...', ' '];
-			// isInputActive = true;
-        },
-
-
-		SHUTDOWN: () => {
-			// ...
-		}
-	};
-
-	// Функция смены состояния (как .set_state() в aiogram)
-	async function transitionTo(newState: ScenarioStateValue) {
-		currentState = newState;
-		await states[newState]();
-	}
-
-	function handleWriterComplete() {
-		switch (currentState) {
-			case ScenarioState.BOOT: 
-                transitionTo(ScenarioState.SCANNING); 
-                break;
-			case ScenarioState.SCANNING: 
-                transitionTo(ScenarioState.HARDWARE_CHECK); 
-                break;
-			case ScenarioState.HARDWARE_CHECK: 
-                transitionTo(ScenarioState.AWAIT_LOGIN); 
-                break;
-		}
-	}
-
-	function userInput(value: string) {
-		isInputActive = false; // Блокируем инпут на время обработки
-
-		if (currentState === ScenarioState.AWAIT_PASSWORD) {
-			// маскируем ввод если это пароль
-			let masked = '*'.repeat(value.length)
-			printable = [...printable, `> ${masked}`];
-
-			transitionTo(ScenarioState.MAKE_AUTH);
-
-		} else {
-			// во всех остальных случаях не маскируем ввод
-			printable = [...printable, `> ${value}`];
-		}
-        
-        if (currentState === ScenarioState.AWAIT_LOGIN) {
-            // Переходим к следующему логическому этапу
-            transitionTo(ScenarioState.AWAIT_PASSWORD);
-        }
-	}
 </script>
 
-<!-- Слушаем клики и нажатия клавиш во всем окне -->
 <svelte:window 
-	onclick={startSystem} 
-	onkeydown={startSystem} 
+	onclick={() => terminal.initialize()} 
+	onkeydown={() => terminal.start()} 
 />
 
-{#if !isStarted}
-	<button 
-		type="button"
-		class="boot-screen" 
-		onclick={startSystem}
-	>
-		<span class="blink">НАЖМИТЕ ЛЮБУЮ КНОПКУ ДЛЯ ЗАПУСКА G.A.T.E. OS</span>
+{#if !terminal.isStarted}
+	<button type="button" class="boot-screen" onclick={() => terminal.start()}>
+		<span class="blink">НАЖМИТЕ ЛЮБУЮ КНОПКУ ДЛЯ ВЫХОДА ИЗ РЕЖИМА ОЖИДАНИЯ</span>
 	</button>
 {:else}
-	<LineWriter lines={printable} bind:bindClear={clearTerminal} onComplete={handleWriterComplete} />
+	<LineWriter 
+        lines={terminal.printable} 
+        bind:bindClear={terminal.clearTerminal} 
+        onComplete={() => terminal.handleWriterComplete()} 
+    />
 {/if}
 
-
-{#if isInputActive}
-	<TerminalInput prefix="" onEnter={userInput} />
+{#if terminal.isInputActive}
+	<TerminalInput prefix="" onEnter={(val: string) => terminal.handleUserInput(val)} />
 {/if}
 
 <style>
 	.boot-screen {
-		/* Сбрасываем стандартные стили кнопки */
+		/* сбрасываем стандартные стили кнопки */
 		background: none;
 		border: none;
 		padding: 0;
@@ -173,13 +42,13 @@
 		color: inherit;
 		cursor: pointer;
 		
-		/* Делаем на весь экран */
+		/* делаем на весь экран */
 		width: 100%;
 		height: 100%;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		outline: none; /* Убираем рамку фокуса, если она портит дизайн */
+		outline: none; /* убираем рамку фокуса */
 	}
 
 	.blink {
