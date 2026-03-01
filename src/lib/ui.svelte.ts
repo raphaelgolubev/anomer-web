@@ -1,5 +1,7 @@
 import { type OsdTab } from "./types";
 
+const STORAGE_KEY = 'anom_monitor_settings';
+
 // используем расширение .svelte.ts, чтобы работали руны
 class UISettings {
     isMonitorActive = $state(false);
@@ -16,6 +18,42 @@ class UISettings {
     saturation = $state(100);
     volume = $state(50);
     glitchFreq = $state(30);
+
+    constructor() {
+        this.loadSettings();
+
+        // Автоматическое сохранение при изменении реактивных переменных
+        $effect.root(() => {
+            $effect(() => {
+                this.saveSettings();
+            });
+        });
+    }
+
+    private saveSettings() {
+        const data = {
+            brightness: this.brightness,
+            saturation: this.saturation,
+            volume: this.volume
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    private loadSettings() {
+        if (typeof localStorage === 'undefined') return;
+        
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                this.brightness = parsed.brightness ?? 100;
+                this.saturation = parsed.saturation ?? 100;
+                this.volume = parsed.volume ?? 50;
+            } catch (e) {
+                console.error("Ошибка чтения настроек OSD", e);
+            }
+        }
+    }
 
     // Дерево настроек
     osdTree: OsdTab[] = [
