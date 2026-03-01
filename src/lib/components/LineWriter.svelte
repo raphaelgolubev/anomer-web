@@ -78,9 +78,9 @@
 	.system-line {
 		min-height: 1.2em;
 		word-break: break-all;
-		text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+		text-shadow: 0 0 8px rgba(0, 255, 65, 0.5);
 	}
 	.system-line.error { color: #ff3e00; text-shadow: 0 0 8px rgba(255, 62, 0, 0.6); }
-    .system-line.success { color: #00ff41; }
-    .system-line.warning { color: #ffcc00; }
+    .system-line.success { color: #00ff41; text-shadow: 0 0 8px rgba(0, 255, 26, 0.6); }
+    .system-line.warning { color: #ffcc00; text-shadow: 0 0 8px rgba(255, 208, 0, 0.6); }
 </style>

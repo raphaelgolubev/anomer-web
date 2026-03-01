@@ -18,13 +18,30 @@ export interface LineConfig {
 export type TerminalLine = string | LineConfig;
 
 export const ScenarioState = {
-    BOOT: 'BOOT',
+    MONITOR_ON: 'MONITOR_ON',
+    MONITOR_OFF: 'MONITOR_OFF',
+    PREBOOT: 'PREBOOT',
     SCANNING: 'SCANNING',
-    HARDWARE_CHECK: 'HARDWARE_CHECK',
+    BOOT_GATE_OS: 'HARDWARE_CHECK',
     AWAIT_LOGIN: 'AWAIT_LOGIN',
     AWAIT_PASSWORD: 'AWAIT_PASSWORD',
     MAKE_AUTH: 'MAKE_AUTH',
-    SHUTDOWN: 'SHUTDOWN'
 } as const;
 
 export type ScenarioStateValue = typeof ScenarioState[keyof typeof ScenarioState];
+
+export interface OsdItem {
+    id: string;
+    label: string;
+    value: () => number;
+    step: number;
+    max: number;
+    adjust: (delta: number) => void;
+}
+
+export interface OsdTab {
+    id: string;
+    icon: string;
+    label: string;
+    items: OsdItem[];
+}

@@ -58,6 +58,7 @@
 	onmousemove={handleMouseMove}
 	onmouseenter={() => (isInside = true)}
 	onmouseleave={() => (isInside = false)}
+	style="filter: brightness({ui.brightness}%) saturate({ui.saturation}%);"
 >
 	<!-- CURSOR -->
 	<div
@@ -129,7 +130,7 @@
 		width: 100%;
 		height: 100%;
 		color: var(--accent-color);
-		text-shadow: 0 0 4px rgba(0, 255, 42, 0.8);
+		text-shadow: 0 0 12px rgba(0, 255, 42, 0.8);
 		z-index: 2;
 		display: flex;
 		flex-direction: column;

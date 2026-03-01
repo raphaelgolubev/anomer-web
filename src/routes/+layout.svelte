@@ -8,14 +8,41 @@
 	import { ui } from '$lib/ui.svelte';
 	import { fade } from 'svelte/transition';
 
+	import OSDMenu from '$lib/components/OSDMenu.svelte';
 	import CRTOverlay from '$lib/components/CRTOverlay.svelte';
 	import Terminal from '$lib/components/Terminal.svelte';
 	import TerminalHeader from '$lib/components/TerminalHeader.svelte';
 	import TerminalContent from '$lib/components/TerminalContent.svelte';
 	import TerminalFooter from '$lib/components/TerminalFooter.svelte';
 	import { terminal } from '$lib/terminal.svelte';
-	
+
 	let { children } = $props();
+
+	function menuButton() {
+		sfx.playTick();
+		ui.toggleOsdVisible();
+	}
+
+	function selectButton() {
+		sfx.playTick();
+		ui.toggleOsd();
+	}
+
+	function upButton() {
+		sfx.playTick();
+		if (ui.isOsdOpen) {
+			// Навигация "Вверх" или "Увеличение значения"
+			ui.navigate(-1);
+		}
+	}
+
+	function downButton() {
+		sfx.playTick();
+		if (ui.isOsdOpen) {
+			// Навигация "Вниз" или "Уменьшение значения"
+			ui.navigate(1);
+		}
+	}
 
 	onMount(() => {
 		const handleVisibilityChange = () => {
@@ -42,19 +69,19 @@
 		<img src={monitorImg} class="monitor-frame" alt="Frame" />
 
 		<div class="screen-content">
-
 			<CRTOverlay />
 
 			<div class="crt-physical-layer" class:monitor-off={!ui.isMonitorActive}>
 				<Terminal>
 					{#if ui.isGateOSActive}
 						<div transition:fade={{ duration: 1000 }}>
-							<TerminalHeader deviceId={terminal.deviceId}/>
+							<TerminalHeader deviceId={terminal.deviceId} />
 						</div>
 					{/if}
 
 					<TerminalContent>
 						{@render children()}
+						<OSDMenu />
 					</TerminalContent>
 
 					{#if ui.isGateOSActive}
@@ -80,18 +107,16 @@
 				<div class="power-led" class:active={ui.isMonitorActive}></div>
 			</div>
 
-			<button class="bezel-btn" title="Яркость" aria-label="Яркость" onclick={() => sfx.playTick()}>
-				<span class="icon">☼</span>
+			<button class="bezel-btn" title="Вверх" aria-label="Вверх" onclick={upButton}>
+				<span class="icon">▲</span>
 			</button>
-			<button
-				class="bezel-btn"
-				title="Контраст"
-				aria-label="Контраст"
-				onclick={() => sfx.playTick()}
-			>
-				<span class="icon">◑</span>
+			<button class="bezel-btn" title="Вниз" aria-label="Вниз" onclick={downButton}>
+				<span class="icon">▼</span>
 			</button>
-			<button class="bezel-btn" title="Меню" aria-label="Меню" onclick={() => sfx.playTick()}>
+			<button class="bezel-btn" title="Выбрать" aria-label="Выбрать" onclick={selectButton}>
+				<span class="icon">↵</span>
+			</button>
+			<button class="bezel-btn" title="Меню" aria-label="Меню" onclick={menuButton}>
 				<span class="icon">≡</span>
 			</button>
 		</div>
