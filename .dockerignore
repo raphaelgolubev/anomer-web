@@ -1,0 +1,43 @@
+# Зависимости
+node_modules/
+/temp/
+
+# Сборка SvelteKit
+.svelte-kit/
+build/
+
+# Логи и временные файлы
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example
+
+# Тесты (мы их удалили из package.json)
+tests/
+e2e/
+playwright-report/
+test-results/
+.vitest-results/
+coverage/
+
+# Конфиги инструментов разработки
+.prettierrc
+.eslintrc.cjs
+.eslintcache
+eslint.config.js
+prettier.config.js
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Редактор кода
+.vscode/
+.idea/
+*.swp
