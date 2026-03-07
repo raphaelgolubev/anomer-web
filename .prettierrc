@@ -3,14 +3,19 @@
 	"singleQuote": true,
 	"trailingComma": "none",
 	"printWidth": 100,
-	"plugins": ["prettier-plugin-svelte", "prettier-plugin-tailwindcss"],
+	"plugins": ["prettier-plugin-svelte"],
 	"overrides": [
 		{
 			"files": "*.svelte",
 			"options": {
 				"parser": "svelte"
 			}
+		},
+		{
+			"files": ["static/**/*", "bun.lock", "bun.lockb"],
+			"options": {
+				"requirePragma": true
+			}
 		}
-	],
-	"tailwindStylesheet": "./src/routes/layout.css"
+	]
 }
