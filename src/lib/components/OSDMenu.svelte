@@ -17,9 +17,9 @@
 			{/each}
 		</div>
 
-		<div class="osd-body">
-			<div class="osd-tab-label">{ui.osdTree[ui.activeTabIdx].label}</div>
+		<div class="osd-tab-label">{ui.osdTree[ui.activeTabIdx].label}</div>
 
+		<div class="osd-body">
 			<div class="osd-items-list">
 				{#each ui.osdTree[ui.activeTabIdx].items as item, i}
 					<div
@@ -64,7 +64,7 @@
 		left: 50%;
 		transform: translateX(-50%);
 		width: 400px; /* Фиксированная ширина лучше для OSD */
-		height: 400px;
+		/* height: 400px; */
 		background: #0000aa;
 		border: 2px solid #ffffff;
 		box-shadow: 6px 6px 0 #000;
@@ -156,8 +156,8 @@
 		border-top: 1px solid #fff;
 		margin-top: 5px;
 		padding: 6px 0;
-		font-size: 9px;
+		font-size: 12px;
 		text-align: center;
-		color: #aaa;
+		color: #ffffff;
 	}
 </style>
