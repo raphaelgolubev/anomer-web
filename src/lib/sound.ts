@@ -1,3 +1,5 @@
+import { ui } from "./ui.svelte";
+
 class TerminalSound {
     private ctx: AudioContext | null = null;
     private humNode: { osc: OscillatorNode, gain: GainNode } | null = null;
@@ -5,6 +7,11 @@ class TerminalSound {
     init() {
         if (!this.ctx) this.ctx = new AudioContext();
         if (this.ctx.state === 'suspended') this.ctx.resume();
+    }
+
+    // Геттер для получения текущего коэффициента громкости (0.0 - 1.0)
+    private get masterVolume() {
+        return ui.volume / 100;
     }
 
     // управление паузой всего звукового движка
@@ -18,13 +25,25 @@ class TerminalSound {
         }
     }
 
+    updateHumVolume() {
+        if (this.humNode && this.ctx) {
+            // Плавно меняем громкость за 0.1 сек, чтобы не было щелчков
+            this.humNode.gain.gain.setTargetAtTime(
+                0.02 * this.masterVolume, 
+                this.ctx.currentTime, 
+                0.1
+            );
+        }
+    }
+
     // короткий механический клик
     playTick() {
         this.beep(600, 0.005, 'triangle', 0.02, 1000);
     }
 
     playChar() {
-        this.beep(600, 0.005, 'triangle', 0.02, 1000);
+        // this.beep(600, 0.005, 'triangle', 0.02, 1000);
+        this.beep(420, 0.01, 'sawtooth', 0.015, 800);
     }
 
     // глухой удар при переходе на новую строку (Enter)
@@ -34,8 +53,12 @@ class TerminalSound {
 
     // звук ошибки (двойной короткий сигнал)
     playAlert() {
-        this.beep(880, 0.1, 'square', 0.02, 2000);
-        setTimeout(() => this.beep(880, 0.1, 'square', 0.02, 2000), 150);
+        // this.beep(880, 0.1, 'square', 0.02, 2000);
+        // setTimeout(() => this.beep(880, 0.1, 'square', 0.02, 2000), 150);
+
+        const vol = 0.02; // Громкость без учета мастера (он применится в beep)
+        this.beep(880, 0.1, 'square', vol, 2000);
+        setTimeout(() => this.beep(880, 0.1, 'square', vol, 2000), 150);
     }
 
     // эффект включения монитора (высокочастотный свист затухающий)
@@ -49,7 +72,7 @@ class TerminalSound {
         osc.frequency.exponentialRampToValueAtTime(15000, this.ctx.currentTime + 1);
         
         gain.gain.setValueAtTime(0, this.ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.05, this.ctx.currentTime + 0.1);
+        gain.gain.linearRampToValueAtTime(0.05 * this.masterVolume, this.ctx.currentTime + 0.1);
         gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 1);
 
         osc.connect(gain).connect(this.ctx.destination);
@@ -67,7 +90,7 @@ class TerminalSound {
         osc.frequency.setValueAtTime(4000, this.ctx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(40, this.ctx.currentTime + 0.8);
         
-        gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.05 * this.masterVolume, this.ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.8);
 
         osc.connect(gain).connect(this.ctx.destination);
@@ -96,7 +119,7 @@ class TerminalSound {
 
         // плавное появление чтобы не было щелчка
         gain.gain.setValueAtTime(0, this.ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.02, this.ctx.currentTime + 2); // очень тихо!
+        gain.gain.linearRampToValueAtTime(0.02 * this.masterVolume, this.ctx.currentTime + 2); // очень тихо!
 
         osc.connect(filter).connect(gain).connect(this.ctx.destination);
         osc.start();
@@ -141,7 +164,7 @@ class TerminalSound {
         filter.Q.setValueAtTime(10, this.ctx.currentTime);
 
         // резкая огибающая громкости (щелчки)
-        gain.gain.setValueAtTime(0.04, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.04 * this.masterVolume, this.ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.08);
 
         source.connect(filter).connect(gain).connect(this.ctx.destination);
@@ -169,7 +192,7 @@ class TerminalSound {
 
             // мягкое появление и долгое затухание
             gain.gain.setValueAtTime(0, startTime + i * 0.15);
-            gain.gain.linearRampToValueAtTime(0.04, startTime + i * 0.15 + 0.1); 
+            gain.gain.linearRampToValueAtTime(0.04 * this.masterVolume, startTime + i * 0.15 + 0.1); 
             gain.gain.exponentialRampToValueAtTime(0.0001, startTime + i * 0.15 + 1.5);
 
             osc.connect(filter).connect(gain).connect(this.ctx!.destination);
@@ -193,7 +216,7 @@ class TerminalSound {
         osc.type = type;
         osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
         
-        gain.gain.setValueAtTime(volume, this.ctx.currentTime);
+        gain.gain.setValueAtTime(volume * this.masterVolume, this.ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
 
         osc.connect(filter).connect(gain).connect(this.ctx.destination);
