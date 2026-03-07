@@ -60,20 +60,20 @@ class UISettings {
         {
             id: 'PICTURE', icon: '☼', label: 'ИЗОБРАЖЕНИЕ',
             items: [
-                { id: 'br', label: 'BRIGHTNESS', value: () => this.brightness, step: 5, max: 150, adjust: (d) => this.brightness = Math.max(0, Math.min(this.brightness + d, 150)) },
-                { id: 'sa', label: 'SATURATION', value: () => this.saturation, step: 5, max: 200, adjust: (d) => this.saturation = Math.max(0, Math.min(this.saturation + d, 200)) }
+                { id: 'br', label: 'ЯРКОСТЬ', value: () => this.brightness, step: 5, max: 150, adjust: (d) => this.brightness = Math.max(0, Math.min(this.brightness + d, 150)) },
+                { id: 'sa', label: 'НАСЫЩЕННОСТЬ', value: () => this.saturation, step: 5, max: 200, adjust: (d) => this.saturation = Math.max(0, Math.min(this.saturation + d, 200)) }
             ]
         },
         {
             id: 'AUDIO', icon: '♪', label: 'ЗВУК',
             items: [
-                { id: 'vol', label: 'VOLUME', value: () => this.volume, step: 2, max: 100, adjust: (d) => this.volume = Math.max(0, Math.min(this.volume + d, 100)) }
+                { id: 'vol', label: 'ЗВУК', value: () => this.volume, step: 2, max: 100, adjust: (d) => this.volume = Math.max(0, Math.min(this.volume + d, 100)) }
             ]
         },
         {
             id: 'SYSTEM', icon: '⚙', label: 'СИСТЕМА',
             items: [
-                { id: 'gl', label: 'GLITCH FREQ', value: () => this.glitchFreq, step: 10, max: 100, adjust: (d) => this.glitchFreq = Math.max(0, Math.min(this.glitchFreq + d, 100)) }
+                { id: 'gl', label: 'ЧАСТОТА ГЛИТЧЕЙ', value: () => this.glitchFreq, step: 10, max: 100, adjust: (d) => this.glitchFreq = Math.max(0, Math.min(this.glitchFreq + d, 100)) }
             ]
         }
     ];
