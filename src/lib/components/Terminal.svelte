@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	
+
 	import { sfx } from '$lib/sound';
 	import { ui } from '$lib/ui.svelte';
 
@@ -29,25 +29,36 @@
 
 	// рандомные глитчи
 	onMount(() => {
+		let timerId: ReturnType<typeof setTimeout>;
+
 		const triggerGlitch = () => {
 			isGlitching = true;
 
 			if (ui.isMonitorActive) {
-				sfx.playGlitchSfx(); 
+				sfx.playGlitchSfx();
 			}
 
+			// Длительность самого глитча (оставляем короткой)
 			setTimeout(
 				() => {
 					isGlitching = false;
-					// следующий глитч через случайное время (от 2 до 10 сек)
-					setTimeout(triggerGlitch, Math.random() * 8000 + 2000);
+
+					// РАССЧЕТ ПАУЗЫ на основе ui.glitchFreq (0-100)
+					// Если freq = 100, пауза будет от 0.5 до 1.5 сек
+					// Если freq = 0, пауза будет от 10.5 до 11.5 сек
+					const basePause = 10000 - ui.glitchFreq * 95; // Инвертируем: больше частота -> меньше пауза
+					const randomVariation = Math.random() * 1000;
+					const nextInterval = Math.max(200, basePause + randomVariation);
+
+					timerId = setTimeout(triggerGlitch, nextInterval);
 				},
 				Math.random() * 300 + 50
-			); // длительность глитча (50-350мс)
+			);
 		};
 
-		const initialTimeout = setTimeout(triggerGlitch, 3000);
-		return () => clearTimeout(initialTimeout);
+		timerId = setTimeout(triggerGlitch, 3000);
+
+		return () => clearTimeout(timerId);
 	});
 </script>
 
@@ -79,7 +90,11 @@
 
 	<!-- <Scanlines /> -->
 
-	<div class="terminal-screen" class:glitch-active={isGlitching}>
+	<div
+		class="terminal-screen"
+		class:glitch-active={isGlitching}
+		style:--glitch-intensity="{ui.glitchFreq / 50}px"
+	>
 		<!-- Рендерим переданный контент здесь -->
 		{#if children}
 			{@render children()}
@@ -109,7 +124,6 @@
 		position: absolute;
 		width: 20px;
 		height: 20px;
-		background-color: transparent;
 		/* пропускает клики сквозь себя */
 		pointer-events: none;
 		z-index: 9999;
@@ -122,7 +136,7 @@
 		mask-repeat: no-repeat;
 
 		/* цвет курсора можно менять этой строчкой: */
-		background-color: var(--second-color);
+		background-color: #d1ffd9;
 	}
 
 	.terminal-screen {
@@ -145,25 +159,34 @@
 
 	/* отвечает за анимацию рандомных глюков экрана */
 	.glitch-active {
-		animation: shake 0.2s infinite;
-		filter: url(#rgb-shift) brightness(1.2) contrast(1.2) blur(0.9px);
-		pointer-events: none;
-	}
-	@keyframes shake {
-		0% {
-			transform: translate(0, 0);
-		}
-		25% {
-			transform: translate(2px, -1px);
-		}
-		50% {
-			transform: translate(-1px, 2px);
-		}
-		75% {
-			transform: translate(1px, -2px);
-		}
-		100% {
-			transform: translate(0, 0);
-		}
-	}
+        --intensity: var(--glitch-intensity, 2px); 
+        animation: shake 0.2s infinite;
+        filter: url(#rgb-shift) brightness(1.2) contrast(1.2) blur(0.9px);
+        pointer-events: none;
+    }
+
+    @keyframes shake {
+        0% {
+            transform: translate(0, 0);
+        }
+        20% {
+            /* Сдвиг влево-вверх */
+            transform: translate(calc(var(--intensity) * -1), calc(var(--intensity) * -0.5));
+        }
+        40% {
+            /* Сдвиг вправо-вниз */
+            transform: translate(var(--intensity), var(--intensity));
+        }
+        60% {
+            /* Сильный сдвиг влево */
+            transform: translate(calc(var(--intensity) * -1.2), 0);
+        }
+        80% {
+            /* Сдвиг вверх */
+            transform: translate(0, calc(var(--intensity) * -1.1));
+        }
+        100% {
+            transform: translate(0, 0);
+        }
+    }
 </style>
