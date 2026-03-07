@@ -1,0 +1,30 @@
+# ===== BASE
+FROM oven/bun:latest AS base
+WORKDIR /usr/src/app
+
+# ====== INSTALL
+# Копируем файлы зависимостей
+COPY package.json bun.lock ./
+# Устанавливаем всё, включая devDependencies
+RUN bun install --frozen-lockfile
+
+# Фикс для специфичных бинарников Rollup (Mac M1/M2/M3)
+RUN bun add -D @rollup/rollup-linux-arm64-gnu
+
+# ====== FINAL
+FROM base AS development
+
+# Копируем node_modules из стадии base
+COPY --from=base /usr/src/app/node_modules ./node_modules
+# КОПИРУЕМ ВСЕ ИСХОДНИКИ (это важно!)
+COPY . .
+
+# Права доступа для пользователя bun
+RUN chown -R bun:bun /usr/src/app
+USER bun
+
+EXPOSE 3000
+EXPOSE 24678
+
+# Запуск с флагом --host обязателен для Docker
+CMD [ "bun", "run", "dev", "--", "--host", "0.0.0.0" ]
