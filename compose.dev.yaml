@@ -1,0 +1,13 @@
+services:
+  frontend:
+    build: 
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"     # Сайт
+      - "24678:24678"   # Vite HMR
+    volumes:
+      - .:/usr/src/app           # Пробрасываем код
+      - /usr/src/app/node_modules # Исключаем node_modules из синхронизации
+    environment:
+      - NODE_ENV=development
