@@ -44,6 +44,12 @@
 		}
 	}
 
+	$effect(() => {
+        // подписываемся на изменение громкости
+        const vol = ui.volume;
+        sfx.updateHumVolume();
+    });
+
 	onMount(() => {
 		const handleVisibilityChange = () => {
 			// document.hidden возвращает true, если вкладка неактивна
