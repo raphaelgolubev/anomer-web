@@ -4,10 +4,8 @@ import { sfx } from './sound';
 import { systemInfo } from './fingerprint.svelte';
 import { generateHexId } from './utils';
 
-class TerminalManager {
-    // состояния
+class TerminalManager { 
     readonly deviceId = $state(generateHexId(4)); 
-
     currentState = $state<ScenarioStateValue>(ScenarioState.PREBOOT);
     printable = $state<TerminalLine[]>([]);
     isInputActive = $state(false);
