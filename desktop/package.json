@@ -1,8 +1,10 @@
 {
 	"name": "anomer-desktop",
 	"version": "0.0.1",
-	"type": "module",
-	"main": "main.ts",
+	"main": "bun/src/index.ts",
+	"peerDependencies": {
+		"typescript": "^5.0.0"
+	},
 	"dependencies": {
 		"electrobun": "1.15.1"
 	},
