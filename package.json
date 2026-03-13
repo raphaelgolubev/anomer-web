@@ -35,7 +35,8 @@
 		"format": "prettier --write .",
 
 		"desktop": "electrobun dev desktop/main.ts",
-    	"desktop:build": "vite build && electrobun build desktop/package.json"
+    	"desktop:build": "vite build && electrobun build desktop/package.json",
+    	"all": "concurrently \"bun run dev\" \"sleep 3 && bun run desktop\""
 	},
 	"type": "module"
 }
