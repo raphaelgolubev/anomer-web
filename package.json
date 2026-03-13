@@ -7,6 +7,7 @@
 		"@sveltejs/kit": "^2.49.1",
 		"@sveltejs/vite-plugin-svelte": "^6.2.1",
 		"@types/node": "^24",
+		"concurrently": "^9.2.1",
 		"electrobun": "^1.15.1",
 		"eslint": "^9.39.1",
 		"eslint-config-prettier": "^10.1.8",
@@ -33,10 +34,9 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "eslint . && prettier --check .",
 		"format": "prettier --write .",
-
 		"desktop": "electrobun dev desktop/main.ts",
-    	"desktop:build": "vite build && electrobun build desktop/package.json",
-    	"all": "concurrently \"bun run dev\" \"sleep 3 && bun run desktop\""
+		"desktop:build": "vite build && electrobun build desktop/package.json",
+		"all": "concurrently \"bun run dev\" \"sleep 3 && bun run desktop\""
 	},
 	"type": "module"
 }
